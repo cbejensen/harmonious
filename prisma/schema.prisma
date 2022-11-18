@@ -11,8 +11,8 @@ datasource db {
 }
 
 model Song {
-  id    Int     @id @default(autoincrement())
-  name  String
+  id     Int     @id @default(autoincrement())
+  name   String
   tracks Track[]
 }
 
@@ -21,4 +21,21 @@ model Track {
   name      String  @unique
   song      Song    @relation(fields: [songId], references: [id])
   songId    Int
+  type      String?
+  vocalType String?
 }
+
+// *** TOOD: when moving to Postgres (not supported in sqlite) ***
+// enum TrackType {
+// 	Vocal
+// 	Instrument
+// 	Click
+// 	Other
+// }
+
+// enum VocalType {
+// 	Male
+// 	Female
+// 	ChildMale
+// 	ChildFemale
+// }
