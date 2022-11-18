@@ -13,6 +13,7 @@ specifiers:
   prisma: ^4.6.1
   svelte: ^3.46.0
   svelte-check: ^2.7.1
+  svelte-preprocess: ^4.10.7
   typescript: ^4.7.4
   vite: 3.2.4
 
@@ -31,6 +32,7 @@ devDependencies:
   prisma: 4.6.1
   svelte: 3.49.0
   svelte-check: 2.8.1_svelte@3.49.0
+  svelte-preprocess: 4.10.7_uslzfc62di2n2otc2tvfklnwji
   typescript: 4.7.4
   vite: 3.2.4_@types+node@18.11.9
 
@@ -259,7 +261,7 @@ packages:
     dev: true
 
   /concat-map/0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
 
   /cookie/0.4.2:
