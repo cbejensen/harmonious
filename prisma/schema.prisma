@@ -17,25 +17,20 @@ model Song {
 }
 
 model Track {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  song      Song    @relation(fields: [songId], references: [id])
-  songId    Int
-  type      String?
-  vocalType String?
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  song   Song    @relation(fields: [songId], references: [id])
+  songId Int
+  type   String?
 }
 
 // *** TOOD: when moving to Postgres (not supported in sqlite) ***
 // enum TrackType {
-// 	Vocal
+// 	MaleVocal
+// 	FemaleVocal
+// 	MaleVocalChild
+// 	FemaleVocalChild
 // 	Instrument
 // 	Click
 // 	Other
-// }
-
-// enum VocalType {
-// 	Male
-// 	Female
-// 	ChildMale
-// 	ChildFemale
 // }
