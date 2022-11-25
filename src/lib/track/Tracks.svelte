@@ -8,11 +8,18 @@
   $: {
     audio.setTracks(tracks);
   }
+
+  $: someSoloed = $audio.tracks.some((track) => track.soloed);
 </script>
 
 <div class="tracks">
   {#each $audio.tracks as track}
-    <Track {track} on:toggleMute={() => audio.toggleMute(track.id)} />
+    <Track
+      {track}
+      implicitlyMuted={someSoloed}
+      on:toggleMute={() => audio.toggleMute(track.id)}
+      on:toggleSolo={() => audio.toggleSolo(track.id)}
+    />
   {/each}
 </div>
 

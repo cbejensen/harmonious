@@ -22,6 +22,18 @@ function createAudio() {
               }
             : track
         )
+      })),
+    toggleSolo: (trackId: number) =>
+      update((state) => ({
+        ...state,
+        tracks: state.tracks.map((track) =>
+          track.id === trackId
+            ? {
+                ...track,
+                soloed: !track.soloed
+              }
+            : track
+        )
       }))
   };
 }

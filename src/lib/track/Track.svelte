@@ -3,6 +3,7 @@
   import { createEventDispatcher, onMount } from 'svelte';
 
   export let track: Track;
+  export let implicitlyMuted = false;
 
   const dispatch = createEventDispatcher();
 
@@ -24,7 +25,12 @@
     max={1}
     step={0.01}
   />
-  <button class="mute" on:click={() => dispatch('toggleMute')} class:active={track.muted}>M</button>
+  <button
+    class="mute"
+    on:click={() => dispatch('toggleMute')}
+    class:active={track.muted}
+    class:active-implicit={implicitlyMuted}>M</button
+  >
   <button class="solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}>S</button
   >
 </div>
@@ -50,5 +56,8 @@
   }
   .active {
     color: red;
+  }
+  .active-implicit {
+    background-color: gray;
   }
 </style>
