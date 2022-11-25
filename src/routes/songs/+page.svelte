@@ -1,13 +1,12 @@
 <script lang="ts">
   import type { PageData } from './$types';
   export let data: PageData;
-  console.log(data);
 </script>
 
 {#if data}
   <ul>
     {#each data.songs as song}
-      <li>{song.name}</li>
+      <li><a href={`/songs/${song.id}`}>{song.name}</a></li>
     {/each}
   </ul>
 {:else}

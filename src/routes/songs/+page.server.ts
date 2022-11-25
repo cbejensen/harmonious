@@ -3,6 +3,5 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
   const songs = await db.song.findMany();
-  console.log(songs);
   return { songs };
 };

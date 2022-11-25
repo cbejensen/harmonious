@@ -22,14 +22,19 @@ model Track {
   song   Song    @relation(fields: [songId], references: [id])
   songId Int
   type   String?
+  url    String?
 }
 
 // *** TOOD: when moving to Postgres (not supported in sqlite) ***
 // enum TrackType {
-// 	MaleVocal
-// 	FemaleVocal
-// 	MaleVocalChild
-// 	FemaleVocalChild
+// 	MelodyMale
+// 	HarmonyMale
+// 	MelodyFemale
+// 	HarmonyFemale
+// 	MelodyMaleChild
+// 	HarmonyMaleChild
+// 	MelodyFemaleChild
+// 	HarmonyFemaleChild
 // 	Instrument
 // 	Click
 // 	Other
