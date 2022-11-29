@@ -11,7 +11,7 @@
       ...track,
       muted: false,
       soloed: false,
-      volume: 1
+      volume: 50
     })
   );
 </script>
@@ -19,3 +19,9 @@
 <h1>{song.name}</h1>
 
 <Tracks {tracks} />
+
+<style>
+  h1 {
+    margin-bottom: 2rem;
+  }
+</style>

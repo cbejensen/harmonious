@@ -13,25 +13,24 @@
   });
 </script>
 
-<div class="wrap">
-  {track.name}
+<div class="wrap" class:muted={track.muted}>
+  <div class="name">{track.name}</div>
   <input
-    class="volume"
+    orient="vertical"
+    aria-orientation="vertical"
     aria-label={`Volume for ${track.name}`}
     type="range"
     name={track.name}
     bind:value={track.volume}
-    min={0}
-    max={1}
-    step={0.01}
   />
   <button
-    class="mute"
+    class="modifier mute"
     on:click={() => dispatch('toggleMute')}
     class:active={track.muted}
-    class:active-implicit={implicitlyMuted}>M</button
+    class:active-implicit={implicitlyMuted}>Mute</button
   >
-  <button class="solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}>S</button
+  <button class="modifier solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}
+    >Solo</button
   >
 </div>
 
@@ -41,23 +40,38 @@
     align-items: center;
     flex-direction: column;
     gap: 1rem;
+    width: 6rem;
   }
-  button {
-    border: none;
-    color: white;
+  .name {
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    text-align: center;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .modifier {
     padding: 0.5rem;
     font-size: 1rem;
+    width: 100%;
+    background: none;
+    border: 1px solid var(--color);
+    color: var(--color);
+  }
+  .modifier.active,
+  .modifier.active-implicit {
+    background-color: var(--color);
+    color: white;
   }
   .mute {
-    background-color: blue;
+    --color: gray;
   }
   .solo {
-    background-color: goldenrod;
+    --color: goldenrod;
   }
-  .active {
-    color: red;
-  }
-  .active-implicit {
-    background-color: gray;
+
+  /*  */
+  input[type='range'] {
+    -webkit-appearance: slider-vertical;
   }
 </style>
