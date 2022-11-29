@@ -13,8 +13,8 @@
   });
 </script>
 
-<div class="wrap" class:muted={track.muted}>
-  <div class="name">{track.name}</div>
+<section class="wrap" class:muted={track.muted}>
+  <div role="heading" class="name">{track.name}</div>
   <input
     orient="vertical"
     aria-orientation="vertical"
@@ -32,10 +32,10 @@
   <button class="modifier solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}
     >Solo</button
   >
-</div>
+</section>
 
 <style>
-  .wrap {
+  section {
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -50,6 +50,9 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
+  input[type='range'] {
+    -webkit-appearance: slider-vertical;
+  }
   .modifier {
     padding: 0.5rem;
     font-size: 1rem;
@@ -58,20 +61,17 @@
     border: 1px solid var(--color);
     color: var(--color);
   }
-  .modifier.active,
-  .modifier.active-implicit {
+  .modifier.mute {
+    --color: steelblue;
+  }
+  .modifier.solo {
+    --color: goldenrod;
+  }
+  .modifier.active {
     background-color: var(--color);
     color: white;
   }
-  .mute {
+  .modifier.active-implicit {
     --color: gray;
-  }
-  .solo {
-    --color: goldenrod;
-  }
-
-  /*  */
-  input[type='range'] {
-    -webkit-appearance: slider-vertical;
   }
 </style>
