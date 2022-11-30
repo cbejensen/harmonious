@@ -17,11 +17,17 @@
     <Track
       {track}
       implicitlyMuted={someSoloed}
+      bind:paused={$audio.paused}
+      bind:currentTime={$audio.currentTime}
       on:toggleMute={() => audio.toggleMute(track.id)}
       on:toggleSolo={() => audio.toggleSolo(track.id)}
     />
   {/each}
 </div>
+<button on:click={() => ($audio.paused ? audio.play() : audio.pause())}
+  >{$audio.paused ? 'Play' : 'Pause'}</button
+>
+<p>Current time: {$audio.currentTime}</p>
 
 <style>
   .tracks {
