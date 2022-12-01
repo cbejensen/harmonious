@@ -1,33 +1,53 @@
 <script lang="ts">
-  import type { Track as TrackState } from './Track.types';
+  import type { Track as TrackType } from '@prisma/client';
   import Track from './Track.svelte';
-  import { audio } from '$lib/stores/audio';
+  import { onMount } from 'svelte';
 
-  export let tracks: TrackState[];
+  export let tracks: TrackType[];
 
-  $: {
-    audio.setTracks(tracks);
+  let audioCtx: AudioContext;
+  let audioEls: NodeListOf<HTMLAudioElement>;
+  let paused = true;
+  console.log(paused);
+  let currentTime = 0;
+
+  onMount(() => {
+    audioCtx = new AudioContext();
+    audioEls = document.querySelectorAll('.track');
+    audioEls.forEach((el) => {
+      const track = audioCtx.createMediaElementSource(el);
+      track.connect(audioCtx.destination);
+    });
+  });
+
+  function togglePlay() {
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    paused = !paused;
   }
 
-  $: someSoloed = $audio.tracks.some((track) => track.soloed);
+  $: someSoloed = tracks.some((track) => track.soloed);
 </script>
 
 <div class="tracks">
-  {#each $audio.tracks as track}
+  {#each tracks as track}
+    <audio
+      class="track"
+      src={track.url}
+      bind:paused
+      muted={track.muted || (someSoloed && !track.soloed)}
+    />
     <Track
       {track}
       implicitlyMuted={someSoloed}
-      bind:paused={$audio.paused}
-      bind:currentTime={$audio.currentTime}
-      on:toggleMute={() => audio.toggleMute(track.id)}
-      on:toggleSolo={() => audio.toggleSolo(track.id)}
+      on:toggleMute={() => (track.muted = !track.muted)}
+      on:toggleSolo={() => (track.soloed = !track.soloed)}
     />
   {/each}
 </div>
-<button on:click={() => ($audio.paused ? audio.play() : audio.pause())}
-  >{$audio.paused ? 'Play' : 'Pause'}</button
->
-<p>Current time: {$audio.currentTime}</p>
+<button on:click={togglePlay} type="button">{paused ? 'Play' : 'Pause'}</button>
+<p>Current time: {currentTime}</p>
 
 <style>
   .tracks {

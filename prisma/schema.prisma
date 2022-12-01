@@ -21,6 +21,10 @@ model Track {
   name   String  @unique
   song   Song    @relation(fields: [songId], references: [id])
   songId Int
+  gain   Int     @default(1)
+  pan    Int     @default(0)
+  muted  Boolean @default(false)
+  soloed Boolean @default(false)
   type   String?
   url    String?
 }
@@ -36,6 +40,8 @@ model Track {
 // 	MelodyFemaleChild
 // 	HarmonyFemaleChild
 // 	Instrument
+// 	MelodyInstrument
+// 	HarmonyInstrument
 // 	Click
 // 	Other
 // }

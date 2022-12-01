@@ -1,34 +1,12 @@
 <script lang="ts">
-  import type { Track } from './Track.types';
-  import { createEventDispatcher, onMount } from 'svelte';
+  import type { Track } from '@prisma/client';
+  import { createEventDispatcher } from 'svelte';
 
   export let track: Track;
-  export let currentTime: number;
-  export let paused: boolean;
   export let implicitlyMuted = false;
 
   const dispatch = createEventDispatcher();
-
-  // let audio: HTMLAudioElement;
-  // onMount(() => {
-  //   audio = new Audio(track.url ?? undefined);
-  // });
-  // let audio: HTMLAudioElement;
-  // $: {
-  //   if (audio) {
-  //     paused ? audio.pause() : audio.play();
-  //   }
-  // }
-  // $: {
-  //   if (audio) {
-  //     audio.currentTime = currentTime;
-  //   }
-  // }
 </script>
-
-{#if track.url}
-  <audio src={track.url} bind:currentTime bind:paused />
-{/if}
 
 <section class="wrap" class:muted={track.muted}>
   <div role="heading" class="name">{track.name}</div>
@@ -38,7 +16,6 @@
     aria-label={`Volume for ${track.name}`}
     type="range"
     name={track.name}
-    bind:value={track.volume}
   />
   <button
     class="modifier mute"
@@ -49,7 +26,6 @@
   <button class="modifier solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}
     >Solo</button
   >
-  <!-- <button on:click={() => audio.play()}>Play</button> -->
 </section>
 
 <style>
