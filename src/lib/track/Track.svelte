@@ -1,23 +1,34 @@
 <script lang="ts">
-  import type { Track } from '@prisma/client';
+  // import type { Track } from '@prisma/client';
   import { createEventDispatcher } from 'svelte';
 
-  export let track: Track;
-  export let implicitlyMuted = false;
+  // export let track: Track;
+  // export let implicitlyMuted = false;
+  export let name: string;
+  export let volume = 0.5;
 
-  const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ setVolume: number }>();
+
+  function setVolume(e: Event) {
+    dispatch('setVolume', parseFloat((e.target as HTMLInputElement).value));
+  }
 </script>
 
-<section class="wrap" class:muted={track.muted}>
-  <div role="heading" class="name">{track.name}</div>
+<section class="wrap">
+  <div role="heading" class="name">{name}</div>
   <input
-    orient="vertical"
     aria-orientation="vertical"
-    aria-label={`Volume for ${track.name}`}
+    aria-label={`Volume for ${name}`}
+    value={volume}
+    min={0}
+    max={1}
+    step={0.01}
+    on:input={setVolume}
+    orient="vertical"
     type="range"
-    name={track.name}
+    {name}
   />
-  <button
+  <!-- <button
     class="modifier mute"
     on:click={() => dispatch('toggleMute')}
     class:active={track.muted}
@@ -25,7 +36,7 @@
   >
   <button class="modifier solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}
     >Solo</button
-  >
+  > -->
 </section>
 
 <style>

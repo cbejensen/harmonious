@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Track as TrackType } from '@prisma/client';
-  // import Track from './Track.svelte';
+  import Track from './Track.svelte';
   import { onMount } from 'svelte';
   import { Howl, Howler } from 'howler';
 
@@ -15,44 +15,42 @@
   }
   // $: someSoloed = tracks.some((track) => track.soloed);
 
-  let howls: Howl[];
+  const howls: Record<number, Howl> = {};
   let duration = 0;
   let paused = true;
   let currentTime = 0;
 
-  function setCurrentTime(e) {
-    currentTime = parseFloat(e.target.value);
-    howls.forEach((howl) => {
-      howl.seek(currentTime);
-    });
+  let howlsLoaded = false;
+  $: if (howlsLoaded) {
+    duration = Object.values(howls).reduce((longest, howl) => {
+      const dur = howl.duration();
+      return dur > longest ? dur : longest;
+    }, 0);
   }
 
   onMount(() => {
-    let loaded = 0;
-    howls = tracks.map(
-      (track) =>
-        new Howl({
-          src: [track.url ?? ''],
-          preload: true,
-          onload: () => {
-            loaded++;
-            if (loaded === tracks.length) {
-              duration = howls.reduce((longest, howl) => {
-                const dur = howl.duration();
-                return dur > longest ? dur : longest;
-              }, 0);
-            }
+    let loadedCount = 0;
+    tracks.forEach((track) => {
+      howls[track.id] = new Howl({
+        src: [track.url ?? ''],
+        preload: true,
+        volume: 0.5,
+        onload: () => {
+          loadedCount++;
+          if (loadedCount === tracks.length) {
+            howlsLoaded = true;
           }
-        })
-    );
+        }
+      });
+    });
   });
 
   function play() {
-    howls.forEach((howl) => (howl.playing() ? null : howl.play()));
+    Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
     paused = false;
   }
   function pause() {
-    howls.forEach((howl) => howl.pause());
+    Object.values(howls).forEach((howl) => howl.pause());
     paused = true;
   }
   function startOver() {
@@ -63,19 +61,31 @@
       play();
     }
   }
+  function setCurrentTime(e) {
+    currentTime = parseFloat(e.target.value);
+    Object.values(howls).forEach((howl) => {
+      howl.seek(currentTime);
+    });
+  }
 </script>
 
-<!-- <div class="tracks">
-  {#each tracks as track}
-    <audio class="track" src={track.url} />
-    <Track
-      {track}
-      implicitlyMuted={someSoloed && !track.soloed}
-      on:toggleMute={() => (track.muted = !track.muted)}
-      on:toggleSolo={() => (track.soloed = !track.soloed)}
-    />
-  {/each}
-</div> -->
+{#if howlsLoaded}
+  <div class="tracks">
+    {#each tracks as track}
+      <Track
+        name={track.name}
+        volume={howls[track.id].volume()}
+        on:setVolume={(volume) => howls[track.id].volume(volume.detail)}
+      />
+      <!-- <Track
+				 {track}
+				 implicitlyMuted={someSoloed && !track.soloed}
+				 on:toggleMute={() => (track.muted = !track.muted)}
+				 on:toggleSolo={() => (track.soloed = !track.soloed)}
+			 /> -->
+    {/each}
+  </div>
+{/if}
 <button on:click={startOver} type="button">Start Over</button>
 <button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Paused'}</button>
 <p>Current time: {formatTime(currentTime)}</p>
