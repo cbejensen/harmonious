@@ -1,16 +1,17 @@
 <script lang="ts">
   import type { Track as TrackType } from '@prisma/client';
-  import Track from './Track.svelte';
+  // import Track from './Track.svelte';
   import { onMount } from 'svelte';
+  import { Howl } from 'howler';
 
   export let tracks: TrackType[];
 
-  let audioCtx: AudioContext | undefined;
-  let audioEls: NodeListOf<HTMLAudioElement> | undefined;
-  let paused = true;
+  // let audioCtx: AudioContext;
+  // let trackEls: NodeListOf<HTMLAudioElement>;
+  // let paused = true;
 
-  let currentTime = 0;
-  $: duration = audioEls?.[0].duration;
+  // let currentTime = 0;
+  // $: duration = trackEls?.[0].duration;
 
   function formatTime(timeInSeconds: number) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -19,46 +20,42 @@
 
     return `${minutes}:${seconds}`;
   }
+  // $: someSoloed = tracks.some((track) => track.soloed);
+
+  let howls: Howl[];
+  let duration = 0;
+  let paused = true;
 
   onMount(() => {
-    audioCtx = new AudioContext();
-    audioEls = document.querySelectorAll('.track');
-    audioEls.forEach((el) => {
-      const track = audioCtx!.createMediaElementSource(el);
-      track.connect(audioCtx!.destination);
-    });
+    howls = tracks.map((track) => new Howl({ src: [track.url ?? ''] }));
+    duration = howls.reduce((longest, howl) => {
+      const dur = howl.duration();
+      return dur > longest ? dur : longest;
+    }, 0);
+    console.log(duration);
   });
 
-  function togglePlay() {
-    if (audioCtx?.state === 'suspended') {
-      audioCtx.resume();
-    }
-    paused = !paused;
+  function play() {
+    howls.forEach((howl) => (howl.playing() ? null : howl.play()));
+    paused = false;
   }
-
-  $: someSoloed = tracks.some((track) => track.soloed);
+  function pause() {
+    howls.forEach((howl) => howl.pause());
+    paused = true;
+  }
+  function startOver() {
+    if (paused) {
+      Howler.stop();
+    } else {
+      Howler.stop();
+      play();
+    }
+  }
 </script>
 
-<div class="tracks">
-  {#each tracks as track, i}
-    {#if i === 0}
-      <!-- content here -->
-      <audio
-        class="track"
-        src={track.url}
-        bind:paused
-        bind:currentTime
-        muted={track.muted || (someSoloed && !track.soloed)}
-      />
-    {:else}
-      <audio
-        class="track"
-        src={track.url}
-        bind:paused
-        {currentTime}
-        muted={track.muted || (someSoloed && !track.soloed)}
-      />
-    {/if}
+<!-- <div class="tracks">
+  {#each tracks as track}
+    <audio class="track" src={track.url} />
     <Track
       {track}
       implicitlyMuted={someSoloed && !track.soloed}
@@ -66,19 +63,14 @@
       on:toggleSolo={() => (track.soloed = !track.soloed)}
     />
   {/each}
-</div>
-<button on:click={togglePlay} type="button">{paused ? 'Play' : 'Pause'}</button>
-<p>Current time: {formatTime(currentTime)}</p>
+</div> -->
+<button on:click={startOver} type="button">Start Over</button>
+<button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Paused'}</button>
+<!-- <p>Current time: {formatTime(currentTime)}</p> -->
+
 {#if duration}
   <p>Duration: {formatTime(duration)}</p>
-  <input
-    type="range"
-    name="seek song"
-    bind:value={currentTime}
-    min={0}
-    max={duration}
-    step={0.01}
-  />
+  <input type="range" name="seek song" min={0} max={duration} step={0.01} />
 {/if}
 
 <style>
