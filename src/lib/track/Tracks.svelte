@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Track as TrackType } from '@prisma/client';
   import Track from './Track.svelte';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { Howl, Howler } from 'howler';
 
   export let tracks: TrackType[];
@@ -45,6 +45,8 @@
     });
   });
 
+  onDestroy(() => Howler.stop());
+
   function play() {
     Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
     paused = false;
@@ -87,7 +89,7 @@
   </div>
 {/if}
 <button on:click={startOver} type="button">Start Over</button>
-<button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Paused'}</button>
+<button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Pause'}</button>
 <p>Current time: {formatTime(currentTime)}</p>
 
 {#if duration}
