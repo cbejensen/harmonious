@@ -2,16 +2,9 @@
   import type { Track as TrackType } from '@prisma/client';
   // import Track from './Track.svelte';
   import { onMount } from 'svelte';
-  import { Howl } from 'howler';
+  import { Howl, Howler } from 'howler';
 
   export let tracks: TrackType[];
-
-  // let audioCtx: AudioContext;
-  // let trackEls: NodeListOf<HTMLAudioElement>;
-  // let paused = true;
-
-  // let currentTime = 0;
-  // $: duration = trackEls?.[0].duration;
 
   function formatTime(timeInSeconds: number) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -25,14 +18,33 @@
   let howls: Howl[];
   let duration = 0;
   let paused = true;
+  let currentTime = 0;
+
+  function setCurrentTime(e) {
+    currentTime = parseFloat(e.target.value);
+    howls.forEach((howl) => {
+      howl.seek(currentTime);
+    });
+  }
 
   onMount(() => {
-    howls = tracks.map((track) => new Howl({ src: [track.url ?? ''] }));
-    duration = howls.reduce((longest, howl) => {
-      const dur = howl.duration();
-      return dur > longest ? dur : longest;
-    }, 0);
-    console.log(duration);
+    let loaded = 0;
+    howls = tracks.map(
+      (track) =>
+        new Howl({
+          src: [track.url ?? ''],
+          preload: true,
+          onload: () => {
+            loaded++;
+            if (loaded === tracks.length) {
+              duration = howls.reduce((longest, howl) => {
+                const dur = howl.duration();
+                return dur > longest ? dur : longest;
+              }, 0);
+            }
+          }
+        })
+    );
   });
 
   function play() {
@@ -66,11 +78,19 @@
 </div> -->
 <button on:click={startOver} type="button">Start Over</button>
 <button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Paused'}</button>
-<!-- <p>Current time: {formatTime(currentTime)}</p> -->
+<p>Current time: {formatTime(currentTime)}</p>
 
 {#if duration}
   <p>Duration: {formatTime(duration)}</p>
-  <input type="range" name="seek song" min={0} max={duration} step={0.01} />
+  <input
+    type="range"
+    name="seek song"
+    min={0}
+    max={duration}
+    step={0.01}
+    value={currentTime}
+    on:change={setCurrentTime}
+  />
 {/if}
 
 <style>
