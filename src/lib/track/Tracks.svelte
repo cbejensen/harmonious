@@ -1,10 +1,40 @@
 <script lang="ts">
   import type { Track as TrackType } from '@prisma/client';
   import Track from './Track.svelte';
-  import { onDestroy, onMount } from 'svelte';
-  import { Howl, Howler } from 'howler';
+  import { Howler } from 'howler';
+  import { onDestroy } from 'svelte';
 
-  export let tracks: TrackType[];
+  onDestroy(() => Howler.stop());
+
+  export let tracks: TrackType[] = [];
+  let paused = true;
+  let currentTime = 0;
+
+  function play() {
+    // Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
+    paused = false;
+  }
+
+  function pause() {
+    // Object.values(howls).forEach((howl) => howl.pause());
+    paused = true;
+  }
+
+  function startOver() {
+    if (paused) {
+      Howler.stop();
+    } else {
+      Howler.stop();
+      play();
+    }
+  }
+
+  function setCurrentTime(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+    currentTime = parseFloat(e.currentTarget.value);
+    // Object.values(howls).forEach((howl) => {
+    //   howl.seek(currentTime);
+    // });
+  }
 
   function formatTime(timeInSeconds: number) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -15,70 +45,40 @@
   }
   // $: someSoloed = tracks.some((track) => track.soloed);
 
-  const howls: Record<number, Howl> = {};
-  let duration = 0;
-  let paused = true;
-  let currentTime = 0;
+  // const howls: Record<number, Howl> = {};
 
-  let howlsLoaded = false;
-  $: if (howlsLoaded) {
-    duration = Object.values(howls).reduce((longest, howl) => {
-      const dur = howl.duration();
-      return dur > longest ? dur : longest;
-    }, 0);
-  }
+  // onMount(() => {
+  // 	let loadedCount = 0;
+  //   tracks.forEach((track) => {
+  //     howls[track.id] = new Howl({
+  // 			src: [track.url ?? ''],
+  //       preload: true,
+  //       volume: 0.5,
+  //       onload: () => {
+  // 				loadedCount++;
+  //         if (loadedCount === tracks.length) {
+  // 					howlsLoaded = true;
+  //         }
+  //       }
+  //     });
+  //   });
+  // });
 
-  onMount(() => {
-    let loadedCount = 0;
-    tracks.forEach((track) => {
-      howls[track.id] = new Howl({
-        src: [track.url ?? ''],
-        preload: true,
-        volume: 0.5,
-        onload: () => {
-          loadedCount++;
-          if (loadedCount === tracks.length) {
-            howlsLoaded = true;
-          }
-        }
-      });
-    });
-  });
+  // let duration = 0;
 
-  onDestroy(() => Howler.stop());
-
-  function play() {
-    Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
-    paused = false;
-  }
-  function pause() {
-    Object.values(howls).forEach((howl) => howl.pause());
-    paused = true;
-  }
-  function startOver() {
-    if (paused) {
-      Howler.stop();
-    } else {
-      Howler.stop();
-      play();
-    }
-  }
-  function setCurrentTime(e) {
-    currentTime = parseFloat(e.target.value);
-    Object.values(howls).forEach((howl) => {
-      howl.seek(currentTime);
-    });
-  }
+  // let howlsLoaded = false;
+  // $: if (howlsLoaded) {
+  // 	duration = Object.values(howls).reduce((longest, howl) => {
+  // 		const dur = howl.duration();
+  // 		return dur > longest ? dur : longest;
+  // 	}, 0);
+  // }
 </script>
 
-{#if howlsLoaded}
+{#if tracks.length}
   <div class="tracks">
-    {#each tracks as track}
-      <Track
-        name={track.name}
-        volume={howls[track.id].volume()}
-        on:setVolume={(volume) => howls[track.id].volume(volume.detail)}
-      />
+    {#each tracks as { muted, name, pan, soloed, src, type, volume }}
+      <Track {muted} {name} {pan} {soloed} {src} {type} {volume} {paused} {currentTime} />
       <!-- <Track
 				 {track}
 				 implicitlyMuted={someSoloed && !track.soloed}
@@ -92,7 +92,7 @@
 <button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Pause'}</button>
 <p>Current time: {formatTime(currentTime)}</p>
 
-{#if duration}
+<!-- {#if duration}
   <p>Duration: {formatTime(duration)}</p>
   <input
     type="range"
@@ -103,8 +103,7 @@
     value={currentTime}
     on:change={setCurrentTime}
   />
-{/if}
-
+{/if} -->
 <style>
   .tracks {
     display: flex;

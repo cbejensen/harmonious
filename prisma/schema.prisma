@@ -11,22 +11,33 @@ datasource db {
 }
 
 model Song {
+  id                   Int           @id @default(autoincrement())
+  author               String?
+  arrangements         Arrangement[]
+  defaultArrangementId Int
+  name                 String
+}
+
+model Arrangement {
   id     Int     @id @default(autoincrement())
   name   String
+  song   Song    @relation(fields: [songId], references: [id])
+  songId Int
   tracks Track[]
+  author String?
 }
 
 model Track {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  song   Song    @relation(fields: [songId], references: [id])
-  songId Int
-  gain   Int     @default(1)
-  pan    Int     @default(0)
-  muted  Boolean @default(false)
-  soloed Boolean @default(false)
-  type   String?
-  url    String?
+  id            Int         @id @default(autoincrement())
+  arrangement   Arrangement @relation(fields: [arrangementId], references: [id])
+  arrangementId Int
+  muted         Boolean     @default(false)
+  name          String      @unique
+  pan           Float       @default(0)
+  soloed        Boolean     @default(false)
+  src           String
+  type          String
+  volume        Float       @default(1)
 }
 
 // *** TOOD: when moving to Postgres (not supported in sqlite) ***

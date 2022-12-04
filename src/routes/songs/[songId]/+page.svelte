@@ -4,12 +4,25 @@
 
   export let data: PageData;
   const { song } = data;
-  const { tracks } = song;
+  let selectedArrangementId = song.defaultArrangementId || song.arrangements[0].id;
+  $: selectedArrangment = song.arrangements[selectedArrangementId];
+  $: tracks = selectedArrangment.tracks;
 </script>
 
 <h1>{song.name}</h1>
 
-<Tracks {tracks} />
+<select bind:value={selectedArrangementId} name="arrangement">
+  {#each song.arrangements as { id, name }}
+    <option value={id}>{name}</option>
+  {/each}
+</select>
+
+{#if tracks.length}
+  <Tracks {tracks} />
+{:else}
+  <!-- TODO -->
+  <button>add track</button>
+{/if}
 
 <style>
   h1 {

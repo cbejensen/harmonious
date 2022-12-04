@@ -1,11 +1,22 @@
 <script lang="ts">
+  import { Howl } from 'howler';
+
   // import type { Track } from '@prisma/client';
   import { createEventDispatcher } from 'svelte';
 
   // export let track: Track;
   // export let implicitlyMuted = false;
+  export let currentTime: number;
+  export let muted: boolean;
   export let name: string;
+  export let pan: number;
+  export let soloed: boolean;
+  export let src: string;
+  export let type: string;
+  export let paused: boolean;
   export let volume = 0.5;
+
+  $: track = new Howl({ src, mute: muted, volume });
 
   const dispatch = createEventDispatcher<{ setVolume: number }>();
 

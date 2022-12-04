@@ -8,7 +8,11 @@ export const load: PageServerLoad = async ({ params }) => {
       id: parseInt(params.songId, 10)
     },
     include: {
-      tracks: true
+      arrangements: {
+        include: {
+          tracks: true
+        }
+      }
     }
   });
 
