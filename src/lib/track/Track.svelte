@@ -2,7 +2,7 @@
   import { Howl } from 'howler';
 
   // import type { Track } from '@prisma/client';
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 
   // export let track: Track;
   // export let implicitlyMuted = false;
@@ -16,7 +16,16 @@
   export let paused: boolean;
   export let volume = 0.5;
 
-  $: track = new Howl({ src, mute: muted, volume });
+  $: track = new Howl({ src });
+
+  $: track.volume(volume);
+  $: track.mute(muted);
+  $: if (paused && track.playing()) {
+    track.pause();
+  } else if (!paused && !track.playing()) {
+    console.log(track);
+    track.play();
+  }
 
   const dispatch = createEventDispatcher<{ setVolume: number }>();
 
@@ -30,11 +39,10 @@
   <input
     aria-orientation="vertical"
     aria-label={`Volume for ${name}`}
-    value={volume}
     min={0}
     max={1}
     step={0.01}
-    on:input={setVolume}
+    bind:value={volume}
     orient="vertical"
     type="range"
     {name}

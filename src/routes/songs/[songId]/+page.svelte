@@ -5,8 +5,8 @@
   export let data: PageData;
   const { song } = data;
   let selectedArrangementId = song.defaultArrangementId || song.arrangements[0].id;
-  $: selectedArrangment = song.arrangements[selectedArrangementId];
-  $: tracks = selectedArrangment.tracks;
+  $: selectedArrangment = song.arrangements.find(({ id }) => id === selectedArrangementId);
+  $: tracks = selectedArrangment?.tracks ?? [];
 </script>
 
 <h1>{song.name}</h1>
