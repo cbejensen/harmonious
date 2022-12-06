@@ -1,11 +1,8 @@
 <script lang="ts">
   import { Howl } from 'howler';
 
-  // import type { Track } from '@prisma/client';
-  import { createEventDispatcher, onMount } from 'svelte';
-
   // export let track: Track;
-  // export let implicitlyMuted = false;
+  export let implicitlyMuted = false;
   export let currentTime: number;
   export let muted: boolean;
   export let name: string;
@@ -19,18 +16,18 @@
   $: track = new Howl({ src });
 
   $: track.volume(volume);
-  $: track.mute(muted);
   $: if (paused && track.playing()) {
     track.pause();
   } else if (!paused && !track.playing()) {
     console.log(track);
     track.play();
   }
-
-  const dispatch = createEventDispatcher<{ setVolume: number }>();
-
-  function setVolume(e: Event) {
-    dispatch('setVolume', parseFloat((e.target as HTMLInputElement).value));
+  $: if (!soloed && (muted || implicitlyMuted)) {
+    console.log(soloed, muted, implicitlyMuted);
+    track.mute(true);
+  } else {
+    console.log(soloed, muted, implicitlyMuted);
+    track.mute(false);
   }
 </script>
 
@@ -47,15 +44,19 @@
     type="range"
     {name}
   />
-  <!-- <button
-    class="modifier mute"
-    on:click={() => dispatch('toggleMute')}
-    class:active={track.muted}
-    class:active-implicit={implicitlyMuted}>Mute</button
-  >
-  <button class="modifier solo" on:click={() => dispatch('toggleSolo')} class:active={track.soloed}
-    >Solo</button
-  > -->
+  <label class="modifier mute" class:active={muted} class:active-implicit={implicitlyMuted}>
+    Mute
+    <input
+      class="sr-only"
+      type="checkbox"
+      checked={muted || implicitlyMuted}
+      on:change={() => (muted = !muted)}
+    />
+  </label>
+  <label class="modifier solo" class:active={soloed}>
+    Solo
+    <input class="sr-only" type="checkbox" bind:checked={soloed} />
+  </label>
 </section>
 
 <style>
@@ -80,10 +81,14 @@
   .modifier {
     padding: 0.5rem;
     font-size: 1rem;
+    text-align: center;
     width: 100%;
-    background: none;
     border: 1px solid var(--color);
     color: var(--color);
+  }
+  .modifier:focus-within {
+    outline: 5px auto Highlight;
+    outline: 5px auto -webkit-focus-ring-color;
   }
   .modifier.mute {
     --color: steelblue;

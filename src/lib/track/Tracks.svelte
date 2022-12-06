@@ -43,7 +43,7 @@
 
     return `${minutes}:${seconds}`;
   }
-  // $: someSoloed = tracks.some((track) => track.soloed);
+  $: someSoloed = tracks.some((track) => track.soloed);
 
   // const howls: Record<number, Howl> = {};
 
@@ -78,7 +78,18 @@
 {#if tracks.length}
   <div class="tracks">
     {#each tracks as { muted, name, pan, soloed, src, type, volume }}
-      <Track {muted} {name} {pan} {soloed} {src} {type} {volume} {paused} {currentTime} />
+      <Track
+        {muted}
+        {name}
+        {pan}
+        {soloed}
+        {src}
+        {type}
+        {volume}
+        {paused}
+        {currentTime}
+        implicitlyMuted={someSoloed}
+      />
       <!-- <Track
 				 {track}
 				 implicitlyMuted={someSoloed && !track.soloed}
