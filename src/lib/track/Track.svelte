@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { Howl } from 'howler';
+  // import { Howl } from 'howler';
 
   // export let track: Track;
   export let implicitlyMuted = false;
-  export let currentTime: number;
   export let muted: boolean;
   export let name: string;
   export let pan: number;
@@ -13,22 +12,23 @@
   export let paused: boolean;
   export let volume = 0.5;
 
-  $: track = new Howl({ src });
+  // $: track = new Howl({ src });
 
-  $: track.volume(volume);
-  $: if (paused && track.playing()) {
-    track.pause();
-  } else if (!paused && !track.playing()) {
-    console.log(track);
-    track.play();
-  }
-  $: if (!soloed && (muted || implicitlyMuted)) {
-    console.log(soloed, muted, implicitlyMuted);
-    track.mute(true);
-  } else {
-    console.log(soloed, muted, implicitlyMuted);
-    track.mute(false);
-  }
+  // $: track.volume(volume);
+  // $: track.seek(currentTime);
+  // $: if (paused && track.playing()) {
+  //   track.pause();
+  // } else if (!paused && !track.playing()) {
+  //   console.log(track);
+  //   track.play();
+  // }
+  // $: if (!soloed && (muted || implicitlyMuted)) {
+  //   console.log(soloed, muted, implicitlyMuted);
+  //   track.mute(true);
+  // } else {
+  //   console.log(soloed, muted, implicitlyMuted);
+  //   track.mute(false);
+  // }
 </script>
 
 <section class="wrap">

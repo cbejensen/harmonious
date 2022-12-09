@@ -3,12 +3,43 @@
   import Track from './Track.svelte';
   import { Howler } from 'howler';
   import { onDestroy } from 'svelte';
+  import { Howl } from 'howler';
+  // import Howl, { howls } from './Howl.svelte';
 
   onDestroy(() => Howler.stop());
 
+  const howls = new Map<number, Howl>();
+  let isSeeking = false;
+
   export let tracks: TrackType[] = [];
+  $: {
+    howls.clear();
+    tracks.forEach((track) => howls.set(track.id, new Howl({ src: track.src })));
+    if (howls.size) {
+      const firstHowl = howls.get(tracks[0].id);
+      function trackCurrentTime() {
+        if (!isSeeking) {
+          currentTime = firstHowl?.seek() ?? 0;
+        }
+        if (firstHowl?.playing()) {
+          requestAnimationFrame(trackCurrentTime);
+        }
+      }
+      firstHowl?.on('play', () => {
+        trackCurrentTime();
+      });
+    }
+  }
+
   let paused = true;
+  $: {
+    howls.forEach((howl) => (paused ? howl.pause() : howl.play()));
+  }
+
   let currentTime = 0;
+  // $: {
+  //   howls.forEach((howl) => howl.seek(currentTime));
+  // }
 
   function play() {
     // Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
@@ -29,11 +60,16 @@
     }
   }
 
-  function setCurrentTime(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
-    currentTime = parseFloat(e.currentTarget.value);
-    // Object.values(howls).forEach((howl) => {
-    //   howl.seek(currentTime);
-    // });
+  function setCurrentTime(time: string) {
+    console.log(time);
+    currentTime = parseFloat(time);
+    // Not sure why, but we need to stop playback first to avoid a weird bug where
+    // it doesn't actually seek until you hit play again.
+    Howler.stop();
+    howls.forEach((howl) => {
+      howl.seek(currentTime);
+      howl.play();
+    });
   }
 
   function formatTime(timeInSeconds: number) {
@@ -77,7 +113,8 @@
 
 {#if tracks.length}
   <div class="tracks">
-    {#each tracks as { muted, name, pan, soloed, src, type, volume }}
+    {#each tracks as { id, muted, name, pan, soloed, src, type, volume }}
+      <!-- <Howl {id} {src}> -->
       <Track
         {muted}
         {name}
@@ -86,22 +123,23 @@
         {src}
         {type}
         {volume}
-        {paused}
-        {currentTime}
+        bind:paused
         implicitlyMuted={someSoloed}
       />
-      <!-- <Track
-				 {track}
-				 implicitlyMuted={someSoloed && !track.soloed}
-				 on:toggleMute={() => (track.muted = !track.muted)}
-				 on:toggleSolo={() => (track.soloed = !track.soloed)}
-			 /> -->
+      <!-- </Howl> -->
     {/each}
   </div>
 {/if}
 <button on:click={startOver} type="button">Start Over</button>
 <button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Pause'}</button>
 <p>Current time: {formatTime(currentTime)}</p>
+<input
+  type="range"
+  value={currentTime}
+  on:change={(e) => setCurrentTime(e.currentTarget.value)}
+  on:mousedown={() => (isSeeking = true)}
+  on:mouseup={() => (isSeeking = false)}
+/>
 
 <!-- {#if duration}
   <p>Duration: {formatTime(duration)}</p>
