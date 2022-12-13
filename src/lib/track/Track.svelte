@@ -13,24 +13,6 @@
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher<{ volumeChange: number }>();
-
-  // $: track = new Howl({ src });
-
-  // $: track.volume(volume);
-  // $: track.seek(currentTime);
-  // $: if (paused && track.playing()) {
-  //   track.pause();
-  // } else if (!paused && !track.playing()) {
-  //   console.log(track);
-  //   track.play();
-  // }
-  // $: if (!soloed && (muted || implicitlyMuted)) {
-  //   console.log(soloed, muted, implicitlyMuted);
-  //   track.mute(true);
-  // } else {
-  //   console.log(soloed, muted, implicitlyMuted);
-  //   track.mute(false);
-  // }
 </script>
 
 <section class="wrap">
