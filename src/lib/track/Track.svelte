@@ -12,7 +12,7 @@
 
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{ volumeChange: number }>();
+  const dispatch = createEventDispatcher<{ toggleMute: undefined; volumeChange: number }>();
 </script>
 
 <section class="wrap">
@@ -35,7 +35,7 @@
       class="sr-only"
       type="checkbox"
       checked={muted || implicitlyMuted}
-      on:change={() => (muted = !muted)}
+      on:change={() => dispatch('toggleMute')}
     />
   </label>
   <label class="modifier solo" class:active={soloed}>

@@ -55,7 +55,7 @@ function createTrackStore() {
             howls.set(id, howl);
           });
           const firstHowl: Howl = howls.values().next().value;
-          firstHowl?.on('play', trackCurrentTime);
+          firstHowl.on('play', trackCurrentTime);
         }
         return { ...state, tracks };
       }),
@@ -77,19 +77,26 @@ function createTrackStore() {
               : t
           )
         };
+      }),
+    toggleMute: (trackId: number, muted?: boolean) =>
+      update((state) => {
+        const howl = howls.get(trackId);
+        if (!howl) {
+          throw Error(`Could not find howl under track ID ${trackId}`);
+        }
+        howl.mute(muted ?? !howl.mute());
+        return {
+          ...state,
+          tracks: state.tracks.map((track) =>
+            track.id === trackId
+              ? {
+                  ...track,
+                  muted: !track.muted
+                }
+              : track
+          )
+        };
       })
-    // toggleMute: (trackId: number) =>
-    //   update((state) => ({
-    //     ...state,
-    //     tracks: state.tracks.map((track) =>
-    //       track.id === trackId
-    //         ? {
-    //             ...track,
-    //             muted: !track.muted
-    //           }
-    //         : track
-    //     )
-    //   })),
     // toggleSolo: (trackId: number) =>
     //   update((state) => ({
     //     ...state,

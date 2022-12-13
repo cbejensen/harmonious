@@ -21,6 +21,7 @@
         {soloed}
         {type}
         {volume}
+        on:toggleMute={() => trackStore.toggleMute(id, !muted)}
         on:volumeChange={({ detail }) => trackStore.setVolume(id, detail)}
       />
     {/each}
