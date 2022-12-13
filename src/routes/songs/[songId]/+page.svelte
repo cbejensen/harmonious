@@ -1,12 +1,16 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import Tracks from '$lib/track/Tracks.svelte';
+  import { trackStore } from '$lib/track/trackStore';
 
   export let data: PageData;
   const { song } = data;
   let selectedArrangementId = song.defaultArrangementId || song.arrangements[0].id;
-  $: selectedArrangment = song.arrangements.find(({ id }) => id === selectedArrangementId);
-  $: tracks = selectedArrangment?.tracks ?? [];
+  $: selectedArrangement = song.arrangements.find(({ id }) => id === selectedArrangementId);
+  $: {
+    const tracks = selectedArrangement?.tracks ?? [];
+    trackStore.setTracks(tracks);
+  }
 </script>
 
 <h1>{song.name}</h1>
@@ -17,12 +21,7 @@
   {/each}
 </select>
 
-{#if tracks.length}
-  <Tracks {tracks} />
-{:else}
-  <!-- TODO -->
-  <button>add track</button>
-{/if}
+<Tracks />
 
 <style>
   h1 {

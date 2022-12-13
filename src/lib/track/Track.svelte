@@ -7,10 +7,12 @@
   export let name: string;
   export let pan: number;
   export let soloed: boolean;
-  export let src: string;
   export let type: string;
-  export let paused: boolean;
   export let volume = 0.5;
+
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher<{ volumeChange: number }>();
 
   // $: track = new Howl({ src });
 
@@ -39,7 +41,8 @@
     min={0}
     max={1}
     step={0.01}
-    bind:value={volume}
+    value={volume}
+    on:change={(e) => dispatch('volumeChange', parseFloat(e.currentTarget.value))}
     orient="vertical"
     type="range"
     {name}

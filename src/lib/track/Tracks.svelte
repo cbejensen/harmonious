@@ -4,6 +4,7 @@
   import { Howler } from 'howler';
   import { onDestroy } from 'svelte';
   import { Howl } from 'howler';
+  import { trackStore } from './trackStore';
   // import Howl, { howls } from './Howl.svelte';
 
   onDestroy(() => Howler.stop());
@@ -37,28 +38,15 @@
   }
 
   let currentTime = 0;
-  // $: {
-  //   howls.forEach((howl) => howl.seek(currentTime));
+
+  // function startOver() {
+  //   if (paused) {
+  //     Howler.stop();
+  //   } else {
+  //     Howler.stop();
+  //     play();
+  //   }
   // }
-
-  function play() {
-    // Object.values(howls).forEach((howl) => (howl.playing() ? null : howl.play()));
-    paused = false;
-  }
-
-  function pause() {
-    // Object.values(howls).forEach((howl) => howl.pause());
-    paused = true;
-  }
-
-  function startOver() {
-    if (paused) {
-      Howler.stop();
-    } else {
-      Howler.stop();
-      play();
-    }
-  }
 
   function setCurrentTime(time: string) {
     console.log(time);
@@ -79,59 +67,34 @@
 
     return `${minutes}:${seconds}`;
   }
-  $: someSoloed = tracks.some((track) => track.soloed);
-
-  // const howls: Record<number, Howl> = {};
-
-  // onMount(() => {
-  // 	let loadedCount = 0;
-  //   tracks.forEach((track) => {
-  //     howls[track.id] = new Howl({
-  // 			src: [track.url ?? ''],
-  //       preload: true,
-  //       volume: 0.5,
-  //       onload: () => {
-  // 				loadedCount++;
-  //         if (loadedCount === tracks.length) {
-  // 					howlsLoaded = true;
-  //         }
-  //       }
-  //     });
-  //   });
-  // });
-
-  // let duration = 0;
-
-  // let howlsLoaded = false;
-  // $: if (howlsLoaded) {
-  // 	duration = Object.values(howls).reduce((longest, howl) => {
-  // 		const dur = howl.duration();
-  // 		return dur > longest ? dur : longest;
-  // 	}, 0);
-  // }
+  // $: someSoloed = tracks.some((track) => track.soloed);
 </script>
 
-{#if tracks.length}
+{#if $trackStore.tracks.length}
   <div class="tracks">
-    {#each tracks as { id, muted, name, pan, soloed, src, type, volume }}
+    {#each $trackStore.tracks as { id, muted, name, pan, soloed, type, volume }}
       <!-- <Howl {id} {src}> -->
       <Track
         {muted}
         {name}
         {pan}
         {soloed}
-        {src}
         {type}
         {volume}
-        bind:paused
-        implicitlyMuted={someSoloed}
+        on:volumeChange={({ detail }) => {
+          console.log(detail);
+
+          trackStore.setVolume(id, detail);
+        }}
       />
       <!-- </Howl> -->
     {/each}
   </div>
 {/if}
-<button on:click={startOver} type="button">Start Over</button>
-<button on:click={paused ? play : pause} type="button">{paused ? 'Play' : 'Pause'}</button>
+<!-- <button on:click={startOver} type="button">Start Over</button> -->
+<button on:click={$trackStore.paused ? trackStore.play : trackStore.pause} type="button"
+  >{$trackStore.paused ? 'Play' : 'Pause'}</button
+>
 <p>Current time: {formatTime(currentTime)}</p>
 <input
   type="range"
