@@ -6,27 +6,32 @@ function createTrackStore() {
   const { subscribe, update } = writable({
     currentTime: 0,
     paused: true,
-    tracks: [] as Track[],
-    _howls: new Map<number, Howl>()
+    tracks: [] as Track[]
   });
+
+  const howls = new Map<number, Howl>();
 
   return {
     subscribe,
     play: () =>
       update((state) => {
-        state._howls.forEach((howl) => howl.play());
+        howls.forEach((howl) => howl.play());
         return { ...state, paused: false };
       }),
     pause: () =>
       update((state) => {
-        state._howls.forEach((howl) => howl.pause());
+        howls.forEach((howl) => howl.pause());
         return { ...state, paused: true };
       }),
-    // setCurrentTime: (currentTime: number) => update((state) => ({ ...state, currentTime })),
+    setCurrentTime: (currentTime: number) =>
+      update((state) => {
+        howls.forEach((howl) => howl.seek(currentTime));
+        return { ...state, currentTime };
+      }),
     setTracks: (tracks: Track[]) =>
       update((state) => {
         Howler.stop();
-        state._howls.clear();
+        howls.clear();
         const someSoloed = tracks.some(({ soloed }) => soloed);
         tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
           const howl = new Howl({
@@ -35,13 +40,13 @@ function createTrackStore() {
             volume
           });
           howl.stereo(pan);
-          state._howls.set(id, howl);
+          howls.set(id, howl);
         });
         return { ...state, tracks };
       }),
     setVolume: (trackId: number, volume: number) =>
       update((state) => {
-        const howl = state._howls.get(trackId);
+        const howl = howls.get(trackId);
         if (!howl) {
           throw Error(`Could not find howl under track ID ${trackId}`);
         }

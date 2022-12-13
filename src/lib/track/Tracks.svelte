@@ -95,11 +95,11 @@
 <button on:click={$trackStore.paused ? trackStore.play : trackStore.pause} type="button"
   >{$trackStore.paused ? 'Play' : 'Pause'}</button
 >
-<p>Current time: {formatTime(currentTime)}</p>
+<p>Current time: {formatTime($trackStore.currentTime)}</p>
 <input
   type="range"
-  value={currentTime}
-  on:change={(e) => setCurrentTime(e.currentTarget.value)}
+  value={$trackStore.currentTime}
+  on:change={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
   on:mousedown={() => (isSeeking = true)}
   on:mouseup={() => (isSeeking = false)}
 />
