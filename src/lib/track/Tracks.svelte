@@ -5,12 +5,31 @@
   import { onDestroy } from 'svelte';
   import { Howl } from 'howler';
   import { trackStore } from './trackStore';
+  import type { Unsubscriber } from 'svelte/store';
   // import Howl, { howls } from './Howl.svelte';
 
   onDestroy(() => Howler.stop());
 
   const howls = new Map<number, Howl>();
+
+  let currentTime = 0;
   let isSeeking = false;
+  let unsubscribeCurrentTime = trackStore.subscribe((state) => {
+    currentTime = state.currentTime;
+  });
+  $: if (isSeeking) {
+    console.log('seeking!');
+    unsubscribeCurrentTime();
+  } else {
+    console.log('SUB');
+    unsubscribeCurrentTime = trackStore.subscribe((state) => {
+      currentTime = state.currentTime;
+    });
+  }
+
+  onDestroy(() => {
+    unsubscribeCurrentTime();
+  });
 
   export let tracks: TrackType[] = [];
   $: {
@@ -19,9 +38,7 @@
     if (howls.size) {
       const firstHowl = howls.get(tracks[0].id);
       function trackCurrentTime() {
-        if (!isSeeking) {
-          currentTime = firstHowl?.seek() ?? 0;
-        }
+        currentTime = firstHowl?.seek() ?? 0;
         if (firstHowl?.playing()) {
           requestAnimationFrame(trackCurrentTime);
         }
@@ -36,8 +53,6 @@
   $: {
     howls.forEach((howl) => (paused ? howl.pause() : howl.play()));
   }
-
-  let currentTime = 0;
 
   // function startOver() {
   //   if (paused) {
@@ -95,11 +110,11 @@
 <button on:click={$trackStore.paused ? trackStore.play : trackStore.pause} type="button"
   >{$trackStore.paused ? 'Play' : 'Pause'}</button
 >
-<p>Current time: {formatTime($trackStore.currentTime)}</p>
+<p>Current time: {formatTime(currentTime)}</p>
 <input
   type="range"
-  value={$trackStore.currentTime}
-  on:change={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
+  value={currentTime}
+  on:input={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
   on:mousedown={() => (isSeeking = true)}
   on:mouseup={() => (isSeeking = false)}
 />

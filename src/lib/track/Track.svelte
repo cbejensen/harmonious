@@ -42,7 +42,7 @@
     max={1}
     step={0.01}
     value={volume}
-    on:change={(e) => dispatch('volumeChange', parseFloat(e.currentTarget.value))}
+    on:input={(e) => dispatch('volumeChange', parseFloat(e.currentTarget.value))}
     orient="vertical"
     type="range"
     {name}

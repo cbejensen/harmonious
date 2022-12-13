@@ -11,6 +11,17 @@ function createTrackStore() {
 
   const howls = new Map<number, Howl>();
 
+  function trackCurrentTime() {
+    const firstHowl: Howl = howls.values().next().value;
+    update((state) => ({
+      ...state,
+      currentTime: firstHowl?.seek() ?? 0
+    }));
+    if (firstHowl?.playing()) {
+      requestAnimationFrame(trackCurrentTime);
+    }
+  }
+
   return {
     subscribe,
     play: () =>
@@ -32,16 +43,20 @@ function createTrackStore() {
       update((state) => {
         Howler.stop();
         howls.clear();
-        const someSoloed = tracks.some(({ soloed }) => soloed);
-        tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
-          const howl = new Howl({
-            src,
-            mute: muted || (someSoloed && !soloed),
-            volume
+        if (tracks.length) {
+          const someSoloed = tracks.some(({ soloed }) => soloed);
+          tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
+            const howl = new Howl({
+              src,
+              mute: muted || (someSoloed && !soloed),
+              volume
+            });
+            howl.stereo(pan);
+            howls.set(id, howl);
           });
-          howl.stereo(pan);
-          howls.set(id, howl);
-        });
+          const firstHowl: Howl = howls.values().next().value;
+          firstHowl?.on('play', trackCurrentTime);
+        }
         return { ...state, tracks };
       }),
     setVolume: (trackId: number, volume: number) =>
