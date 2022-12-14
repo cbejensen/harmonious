@@ -2,11 +2,17 @@ import type { Track } from '@prisma/client';
 import { Howl } from 'howler';
 import { writable } from 'svelte/store';
 
+export interface TrackStoreState {
+  currentTime: number;
+  paused: boolean;
+  tracks: Track[];
+}
+
 function createTrackStore() {
-  const { subscribe, update } = writable({
+  const { subscribe, update } = writable<TrackStoreState>({
     currentTime: 0,
     paused: true,
-    tracks: [] as Track[]
+    tracks: []
   });
 
   const howls = new Map<number, Howl>();
@@ -91,25 +97,42 @@ function createTrackStore() {
             track.id === trackId
               ? {
                   ...track,
-                  muted: !track.muted
+                  muted: muted ?? !track.muted
                 }
               : track
           )
         };
+      }),
+    toggleSolo: (trackId: number, soloed?: boolean) =>
+      update((state) => {
+        const tracks = state.tracks.map((track) =>
+          track.id === trackId
+            ? {
+                ...track,
+                soloed: soloed ?? !track.soloed
+              }
+            : track
+        );
+        const someSoloed = isSomeSoloed(tracks);
+        tracks.forEach((track) => {
+          const howl = howls.get(track.id);
+          if (!howl) return;
+          // If at least one track is soloed, all non-soloed tracks should be implicitly muted
+          // (that is, the track makes no sound, regardless of the state of the mute button).
+          if (track.soloed || !someSoloed) {
+            howl.mute(track.muted);
+          } else {
+            // At least one track is soloed, but this one isn't, so it should be muted.
+            howl.mute(true);
+          }
+        });
+        return { ...state, tracks };
       })
-    // toggleSolo: (trackId: number) =>
-    //   update((state) => ({
-    //     ...state,
-    //     tracks: state.tracks.map((track) =>
-    //       track.id === trackId
-    //         ? {
-    //             ...track,
-    //             soloed: !track.soloed
-    //           }
-    //         : track
-    //     )
-    //   }))
   };
+}
+
+export function isSomeSoloed(tracks: Track[]) {
+  return tracks.some((track) => track.soloed);
 }
 
 export const trackStore = createTrackStore();

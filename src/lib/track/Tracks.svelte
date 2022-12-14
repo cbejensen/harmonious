@@ -1,6 +1,6 @@
 <script lang="ts">
   import Track from './Track.svelte';
-  import { trackStore } from './trackStore';
+  import { isSomeSoloed, trackStore } from './trackStore';
 
   function formatTime(timeInSeconds: number) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -21,7 +21,9 @@
         {soloed}
         {type}
         {volume}
+        implicitlyMuted={isSomeSoloed($trackStore.tracks) && !soloed}
         on:toggleMute={() => trackStore.toggleMute(id, !muted)}
+        on:toggleSolo={() => trackStore.toggleSolo(id, !soloed)}
         on:volumeChange={({ detail }) => trackStore.setVolume(id, detail)}
       />
     {/each}

@@ -12,7 +12,11 @@
 
   import { createEventDispatcher } from 'svelte';
 
-  const dispatch = createEventDispatcher<{ toggleMute: undefined; volumeChange: number }>();
+  const dispatch = createEventDispatcher<{
+    toggleMute: undefined;
+    toggleSolo: undefined;
+    volumeChange: number;
+  }>();
 </script>
 
 <section class="wrap">
@@ -40,7 +44,12 @@
   </label>
   <label class="modifier solo" class:active={soloed}>
     Solo
-    <input class="sr-only" type="checkbox" bind:checked={soloed} />
+    <input
+      class="sr-only"
+      type="checkbox"
+      checked={soloed}
+      on:change={() => dispatch('toggleSolo')}
+    />
   </label>
 </section>
 
