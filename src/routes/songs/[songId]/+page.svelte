@@ -9,7 +9,7 @@
   $: selectedArrangement = song.arrangements.find(({ id }) => id === selectedArrangementId);
   $: {
     const tracks = selectedArrangement?.tracks ?? [];
-    trackStore.setTracks(tracks);
+    trackStore.init(tracks);
   }
 </script>
 

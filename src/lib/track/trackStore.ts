@@ -4,6 +4,9 @@ import { writable } from 'svelte/store';
 
 export interface TrackStoreState {
   currentTime: number;
+  duration: number;
+  /** Map of ID's that have loaded (true) or failed to load (false) */
+  loaded: Record<number, boolean>;
   paused: boolean;
   tracks: Track[];
 }
@@ -11,25 +14,89 @@ export interface TrackStoreState {
 function createTrackStore() {
   const { subscribe, update } = writable<TrackStoreState>({
     currentTime: 0,
+    duration: 0,
+    loaded: {},
     paused: true,
     tracks: []
   });
 
   const howls = new Map<number, Howl>();
 
-  function trackCurrentTime() {
+  function watchCurrentTime() {
     const firstHowl: Howl = howls.values().next().value;
-    update((state) => ({
-      ...state,
-      currentTime: firstHowl?.seek() ?? 0
-    }));
-    if (firstHowl?.playing()) {
-      requestAnimationFrame(trackCurrentTime);
+    function advanceTime() {
+      update((state) => ({
+        ...state,
+        currentTime: firstHowl?.seek() ?? 0
+      }));
+      if (firstHowl?.playing()) {
+        requestAnimationFrame(advanceTime);
+      }
     }
+    firstHowl.on('play', advanceTime);
+  }
+
+  function watchDuration() {
+    howls.forEach((howl, trackId) => {
+      howl.on('load', () => {
+        update((state) => ({ ...state, loaded: { ...state.loaded, [trackId]: true } }));
+        updateDuration();
+      });
+      howl.on('loaderror', () => {
+        update((state) => ({ ...state, loaded: { ...state.loaded, [trackId]: false } }));
+        updateDuration();
+      });
+    });
+  }
+
+  function watchEnd() {
+    const firstHowl: Howl = howls.values().next().value;
+    firstHowl.on('end', () =>
+      update((state) => ({
+        ...state,
+        paused: true
+      }))
+    );
+  }
+
+  function createHowls(tracks: Track[]) {
+    update((state) => ({ ...state, loading: true }));
+    tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
+      const someSoloed = isSomeSoloed(tracks);
+      const howl = new Howl({
+        src,
+        mute: muted || (someSoloed && !soloed),
+        volume
+      });
+      howl.stereo(pan);
+      howls.set(id, howl);
+    });
+  }
+
+  function updateDuration() {
+    let duration = 0;
+    howls.forEach((howl) => {
+      if (howl.duration() > duration) {
+        duration = howl.duration();
+      }
+    });
+    update((state) => ({ ...state, duration }));
   }
 
   return {
     subscribe,
+    init: (tracks: Track[]) =>
+      update((state) => {
+        Howler.stop();
+        howls.clear();
+        if (tracks.length) {
+          createHowls(tracks);
+          watchDuration();
+          watchCurrentTime();
+          watchEnd();
+        }
+        return { ...state, tracks };
+      }),
     play: () =>
       update((state) => {
         howls.forEach((howl) => howl.play());
@@ -44,26 +111,6 @@ function createTrackStore() {
       update((state) => {
         howls.forEach((howl) => howl.seek(currentTime));
         return { ...state, currentTime };
-      }),
-    setTracks: (tracks: Track[]) =>
-      update((state) => {
-        Howler.stop();
-        howls.clear();
-        if (tracks.length) {
-          const someSoloed = tracks.some(({ soloed }) => soloed);
-          tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
-            const howl = new Howl({
-              src,
-              mute: muted || (someSoloed && !soloed),
-              volume
-            });
-            howl.stereo(pan);
-            howls.set(id, howl);
-          });
-          const firstHowl: Howl = howls.values().next().value;
-          firstHowl.on('play', trackCurrentTime);
-        }
-        return { ...state, tracks };
       }),
     setVolume: (trackId: number, volume: number) =>
       update((state) => {

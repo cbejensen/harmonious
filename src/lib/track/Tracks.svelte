@@ -32,25 +32,21 @@
 <button on:click={$trackStore.paused ? trackStore.play : trackStore.pause} type="button"
   >{$trackStore.paused ? 'Play' : 'Pause'}</button
 >
-<p>Current time: {formatTime($trackStore.currentTime)}</p>
-<input
-  type="range"
-  value={$trackStore.currentTime}
-  on:input={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
-/>
 
-<!-- {#if duration}
-  <p>Duration: {formatTime(duration)}</p>
+{#if $trackStore.duration}
+  <p>Current time: {formatTime($trackStore.currentTime)}</p>
+  <p>Duration: {formatTime($trackStore.duration)}</p>
   <input
+    name="seek through the song by changing the playback position"
     type="range"
-    name="seek song"
+    value={$trackStore.currentTime}
     min={0}
-    max={duration}
+    max={$trackStore.duration}
     step={0.01}
-    value={currentTime}
-    on:change={setCurrentTime}
+    on:input={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
   />
-{/if} -->
+{/if}
+
 <style>
   .tracks {
     display: flex;
