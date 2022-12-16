@@ -25,7 +25,7 @@
 {#if selectedArrangement}
   <Tracks />
   <hr style="margin: 2rem 0;" />
-  <Notation arrangement={selectedArrangement} />
+  <Notation arrangement={selectedArrangement} title={song.name} />
 {/if}
 
 <style>
