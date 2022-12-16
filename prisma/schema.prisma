@@ -12,32 +12,40 @@ datasource db {
 
 model Song {
   id                   Int           @id @default(autoincrement())
-  author               String?
   arrangements         Arrangement[]
   defaultArrangementId Int
   name                 String
 }
 
 model Arrangement {
-  id     Int     @id @default(autoincrement())
-  name   String
-  song   Song    @relation(fields: [songId], references: [id])
-  songId Int
-  tracks Track[]
-  author String?
+  id            Int     @id @default(autoincrement())
+  name          String
+  song          Song    @relation(fields: [songId], references: [id])
+  songId        Int
+  tracks        Track[]
+  author        String?
+  key           String  @default("C")
+  lyrics        String? // TODO: Make Json once switched to Postgres
+  tempo         Int     @default(120)
+  timeSignature String  @default("4/4")
+  sequence      String? // TODO: Make String[] once switched to Postgres
 }
 
 model Track {
-  id            Int         @id @default(autoincrement())
-  arrangement   Arrangement @relation(fields: [arrangementId], references: [id])
-  arrangementId Int
-  muted         Boolean     @default(false)
-  name          String      @unique
-  pan           Float       @default(0)
-  soloed        Boolean     @default(false)
-  src           String
-  type          String
-  volume        Float       @default(1)
+  id                Int         @id @default(autoincrement())
+  arrangement       Arrangement @relation(fields: [arrangementId], references: [id])
+  arrangementId     Int
+  muted             Boolean     @default(false)
+  name              String      @unique
+  shortName         String?     @unique
+  pan               Float       @default(0)
+  soloed            Boolean     @default(false)
+  src               String?
+  type              String      @default("Other")
+  volume            Float       @default(1)
+  clef              String      @default("treble")
+  defaultNoteLength String      @default("1/4")
+  notation          String?
 }
 
 // *** TOOD: when moving to Postgres (not supported in sqlite) ***

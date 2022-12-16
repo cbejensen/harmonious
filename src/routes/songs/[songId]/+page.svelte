@@ -2,6 +2,7 @@
   import type { PageData } from './$types';
   import Tracks from '$lib/track/Tracks.svelte';
   import { trackStore } from '$lib/track/trackStore';
+  import Notation from '$lib/notation/Notation.svelte';
 
   export let data: PageData;
   const { song } = data;
@@ -21,7 +22,11 @@
   {/each}
 </select>
 
-<Tracks />
+{#if selectedArrangement}
+  <Tracks />
+  <hr style="margin: 2rem 0;" />
+  <Notation arrangement={selectedArrangement} />
+{/if}
 
 <style>
   h1 {
