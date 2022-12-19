@@ -2,6 +2,8 @@
   import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@rgossiaux/svelte-headlessui';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import Tracks from '$lib/track/Tracks.svelte';
+  // import Notation from '$lib/notation/Notation.svelte';
 
   let activeTabIndex = parseInt($page.url.searchParams.get('tab') ?? '0', 10);
   const tabs = ['Mixer', 'Notation'];
@@ -16,18 +18,20 @@
     goto(url.href, { keepFocus: true, noScroll: true, replaceState: true });
   }}
 >
-  <TabList class="text-center">
+  <TabList class="flex justify-center gap-2">
     {#each tabs as tab, i}
-      <Tab class={({ selected }) => `flex-1 ${selected ? 'text-orange-500' : 'text-gray-500'}`}
-        >{tab}</Tab
-      >
-      {#if i === 0}
-        <span class="mx-2 text-gray-500">|</span>
+      <Tab class={({ selected }) => `${selected ? 'text-orange-500' : 'text-gray-500'}`}>{tab}</Tab>
+      {#if i < tabs.length - 1}
+        <div class="border-r border-gray-500" />
       {/if}
     {/each}
   </TabList>
   <TabPanels>
-    <TabPanel>Mixer</TabPanel>
-    <TabPanel>Notation</TabPanel>
+    <TabPanel>
+      <Tracks />
+    </TabPanel>
+    <TabPanel>
+      <!-- <Notation  /> -->
+    </TabPanel>
   </TabPanels>
 </TabGroup>

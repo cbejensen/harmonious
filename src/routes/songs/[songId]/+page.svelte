@@ -15,7 +15,7 @@
   }
 </script>
 
-<h1 class="text-center mb-4 font-extrabold">{song.name}</h1>
+<h1 class="text-center my-4 font-extrabold">{song.name}</h1>
 
 {#if song.arrangements.length > 1}
   <div class="text-center">
