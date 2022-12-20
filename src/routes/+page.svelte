@@ -3,4 +3,4 @@
   <meta name="description" content="A place to learn harmonies" />
 </svelte:head>
 
-<p>Go to the songs page</p>
+<a href="/songs">Go to the songs page</a>
