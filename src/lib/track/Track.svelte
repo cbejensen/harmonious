@@ -35,24 +35,30 @@
     type="range"
     {name}
   />
-  <label class="modifier mute" class:active={muted} class:active-implicit={implicitlyMuted}>
-    Mute
-    <input
-      class="sr-only"
-      type="checkbox"
-      checked={muted || implicitlyMuted}
-      on:change={() => dispatch('toggleMute')}
-    />
-  </label>
-  <label class="modifier solo" class:active={soloed}>
-    Solo
-    <input
-      class="sr-only"
-      type="checkbox"
-      checked={soloed}
-      on:change={() => dispatch('toggleSolo')}
-    />
-  </label>
+  <div class="flex gap-1">
+    <label
+      class="modifier mute w-8 h-8 grid place-content-center"
+      class:active={muted}
+      class:active-implicit={implicitlyMuted}
+    >
+      M
+      <input
+        class="sr-only"
+        type="checkbox"
+        checked={muted || implicitlyMuted}
+        on:change={() => dispatch('toggleMute')}
+      />
+    </label>
+    <label class="modifier solo w-8 h-8 grid place-content-center" class:active={soloed}>
+      S
+      <input
+        class="sr-only"
+        type="checkbox"
+        checked={soloed}
+        on:change={() => dispatch('toggleSolo')}
+      />
+    </label>
+  </div>
   <input
     class="w-full"
     type="range"

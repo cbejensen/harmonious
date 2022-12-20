@@ -19,7 +19,7 @@
     goto(url.href, { keepFocus: true, noScroll: true, replaceState: true });
   }}
 >
-  <TabList class="flex justify-center gap-2">
+  <TabList class="flex justify-center gap-2 mb-8">
     {#each tabs as tab, i}
       <Tab class={({ selected }) => `${selected ? 'text-orange-500' : 'text-gray-500'}`}>{tab}</Tab>
       {#if i < tabs.length - 1}

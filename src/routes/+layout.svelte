@@ -3,8 +3,12 @@
   import '../app.css';
 </script>
 
-<Header />
+<div class="h-full flex flex-col">
+  <Header />
 
-<main>
-  <slot />
-</main>
+  <main class="flex-1">
+    <slot />
+  </main>
+
+  <footer class="border-t p-2 text-center">Harmonious</footer>
+</div>

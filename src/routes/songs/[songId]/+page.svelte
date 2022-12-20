@@ -1,8 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  // import Tracks from '$lib/track/Tracks.svelte';
   import { songStore } from '$lib/songStore';
-  // import Notation from '$lib/notation/Notation.svelte';
   import SongTabs from '$lib/SongTabs/SongTabs.svelte';
 
   export let data: PageData;
@@ -15,7 +13,7 @@
   }
 </script>
 
-<h1 class="text-center my-4 font-extrabold">{song.name}</h1>
+<h1 class="text-center text-4xl my-4 font-extrabold">{song.name}</h1>
 
 {#if song.arrangements.length > 1}
   <div class="text-center">
@@ -29,7 +27,4 @@
 
 {#if selectedArrangement}
   <SongTabs />
-  <!-- <Tracks />
-  <hr style="margin: 2rem 0;" />
-  <Notation arrangement={selectedArrangement} title={song.name} /> -->
 {/if}

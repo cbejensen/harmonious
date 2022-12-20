@@ -12,7 +12,7 @@
 </script>
 
 {#if $songStore.tracks.length}
-  <div class="tracks">
+  <div class="flex justify-center gap-2">
     {#each $songStore.tracks as { id, muted, name, pan, soloed, type, volume }}
       <Track
         {muted}
@@ -47,10 +47,3 @@
     on:input={(e) => songStore.setCurrentTime(parseFloat(e.currentTarget.value))}
   />
 {/if}
-
-<style>
-  .tracks {
-    display: flex;
-    gap: 2rem;
-  }
-</style>
