@@ -1,6 +1,6 @@
 <script lang="ts">
   import Track from './Track.svelte';
-  import { isSomeSoloed, trackStore } from './trackStore';
+  import { isSomeSoloed, songStore } from '../songStore';
 
   function formatTime(timeInSeconds: number) {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -11,9 +11,9 @@
   }
 </script>
 
-{#if $trackStore.tracks.length}
+{#if $songStore.tracks.length}
   <div class="tracks">
-    {#each $trackStore.tracks as { id, muted, name, pan, soloed, type, volume }}
+    {#each $songStore.tracks as { id, muted, name, pan, soloed, type, volume }}
       <Track
         {muted}
         {name}
@@ -21,29 +21,29 @@
         {soloed}
         {type}
         {volume}
-        implicitlyMuted={isSomeSoloed($trackStore.tracks) && !soloed}
-        on:toggleMute={() => trackStore.toggleMute(id, !muted)}
-        on:toggleSolo={() => trackStore.toggleSolo(id, !soloed)}
-        on:volumeChange={({ detail }) => trackStore.setVolume(id, detail)}
+        implicitlyMuted={isSomeSoloed($songStore.tracks) && !soloed}
+        on:toggleMute={() => songStore.toggleMute(id, !muted)}
+        on:toggleSolo={() => songStore.toggleSolo(id, !soloed)}
+        on:volumeChange={({ detail }) => songStore.setVolume(id, detail)}
       />
     {/each}
   </div>
 {/if}
-<button on:click={$trackStore.paused ? trackStore.play : trackStore.pause} type="button"
-  >{$trackStore.paused ? 'Play' : 'Pause'}</button
+<button on:click={$songStore.paused ? songStore.play : songStore.pause} type="button"
+  >{$songStore.paused ? 'Play' : 'Pause'}</button
 >
 
-{#if $trackStore.duration}
-  <p>Current time: {formatTime($trackStore.currentTime)}</p>
-  <p>Duration: {formatTime($trackStore.duration)}</p>
+{#if $songStore.duration}
+  <p>Current time: {formatTime($songStore.currentTime)}</p>
+  <p>Duration: {formatTime($songStore.duration)}</p>
   <input
     name="seek through the song by changing the playback position"
     type="range"
-    value={$trackStore.currentTime}
+    value={$songStore.currentTime}
     min={0}
-    max={$trackStore.duration}
+    max={$songStore.duration}
     step={0.01}
-    on:input={(e) => trackStore.setCurrentTime(parseFloat(e.currentTarget.value))}
+    on:input={(e) => songStore.setCurrentTime(parseFloat(e.currentTarget.value))}
   />
 {/if}
 

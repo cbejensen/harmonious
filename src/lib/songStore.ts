@@ -1,21 +1,35 @@
-import type { Track } from '@prisma/client';
+import type { Arrangement, Track } from '@prisma/client';
 import { Howl } from 'howler';
 import { writable } from 'svelte/store';
 
-export interface TrackStoreState {
+export interface SongState {
   currentTime: number;
   duration: number;
   /** Map of ID's that have loaded (true) or failed to load (false) */
   loaded: Record<number, boolean>;
+  name: string;
   paused: boolean;
   tracks: Track[];
+  arrangement: Omit<Arrangement, 'id' | 'songId'>;
 }
 
-function createTrackStore() {
-  const { subscribe, update } = writable<TrackStoreState>({
+const defaultArrangement: Omit<Arrangement, 'id' | 'songId'> = {
+  author: '',
+  key: 'C',
+  lyrics: '',
+  name: '',
+  sequence: '',
+  tempo: 120,
+  timeSignature: '4/4'
+};
+
+function createSongStore() {
+  const { subscribe, update } = writable<SongState>({
+    arrangement: defaultArrangement,
     currentTime: 0,
     duration: 0,
     loaded: {},
+    name: '',
     paused: true,
     tracks: []
   });
@@ -44,7 +58,6 @@ function createTrackStore() {
       });
       howl.on('loaderror', () => {
         update((state) => ({ ...state, loaded: { ...state.loaded, [trackId]: false } }));
-        updateDuration();
       });
     });
   }
@@ -60,16 +73,18 @@ function createTrackStore() {
   }
 
   function createHowls(tracks: Track[]) {
+    const someSoloed = isSomeSoloed(tracks);
     update((state) => ({ ...state, loading: true }));
     tracks.forEach(({ id, src, muted, pan, soloed, volume }) => {
-      const someSoloed = isSomeSoloed(tracks);
-      const howl = new Howl({
-        src,
-        mute: muted || (someSoloed && !soloed),
-        volume
-      });
-      howl.stereo(pan);
-      howls.set(id, howl);
+      if (src) {
+        const howl = new Howl({
+          src,
+          mute: muted || (someSoloed && !soloed),
+          volume
+        });
+        howl.stereo(pan);
+        howls.set(id, howl);
+      }
     });
   }
 
@@ -85,17 +100,17 @@ function createTrackStore() {
 
   return {
     subscribe,
-    init: (tracks: Track[]) =>
+    init: (name = 'New Song', arrangement = defaultArrangement, tracks: Track[] = []) =>
       update((state) => {
         Howler.stop();
         howls.clear();
-        if (tracks.length) {
+        if (tracks?.length) {
           createHowls(tracks);
           watchDuration();
           watchCurrentTime();
           watchEnd();
         }
-        return { ...state, tracks };
+        return { ...state, name, arrangement, tracks };
       }),
     play: () =>
       update((state) => {
@@ -182,4 +197,4 @@ export function isSomeSoloed(tracks: Track[]) {
   return tracks.some((track) => track.soloed);
 }
 
-export const trackStore = createTrackStore();
+export const songStore = createSongStore();

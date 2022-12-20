@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Tracks from '$lib/track/Tracks.svelte';
+  import Notation from '$lib/notation/Notation.svelte';
   // import Notation from '$lib/notation/Notation.svelte';
 
   let activeTabIndex = parseInt($page.url.searchParams.get('tab') ?? '0', 10);
@@ -31,7 +32,7 @@
       <Tracks />
     </TabPanel>
     <TabPanel>
-      <!-- <Notation  /> -->
+      <Notation />
     </TabPanel>
   </TabPanels>
 </TabGroup>

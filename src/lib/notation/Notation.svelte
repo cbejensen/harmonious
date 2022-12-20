@@ -1,11 +1,9 @@
 <script lang="ts">
-  import type { Arrangement, Track } from '@prisma/client';
-  import abcjs, { TimingCallbacks, type TimingEvent } from 'abcjs';
+  import abcjs, { TimingCallbacks } from 'abcjs';
   import { onMount } from 'svelte';
-  // import { trackStore } from '../track/trackStore';
+  // import { songStore } from '../track/songStore';
 
-  export let title: string;
-  export let arrangement: Arrangement & { tracks: Track[] };
+  import { songStore } from '../songStore';
 
   let mounted = false;
   let viewMode: 'horizontal' | 'vertical' = 'vertical';
@@ -52,7 +50,13 @@
 
   let notation: string;
   $: {
-    const trackNotation = arrangement.tracks
+    const {
+      arrangement: { key, tempo, timeSignature },
+      name,
+      tracks
+    } = $songStore;
+
+    const trackNotation = tracks
       .map((track, i) => {
         if (!track.notation) {
           return;
@@ -60,34 +64,28 @@
         const trackNotation = track.notation
           .split('\\n')
           .join(viewMode === 'horizontal' ? '' : '\n');
-        return `
-V:${i} name="${track.name}" sname="${track.shortName ?? track.name.slice(0, 3)}" clef="${
-          track.clef
-        }"
-[L:${track.defaultNoteLength}]${trackNotation}`;
+        return [
+          `V:${i} name="${track.name}" sname="${track.shortName ?? track.name.slice(0, 3)}" clef="${
+            track.clef
+          }"`,
+          `[L:${track.defaultNoteLength}]${trackNotation}`
+        ].join('\n');
       })
-      .join('')
+      .join('\n')
       .trim();
-    notation = `
-X:1
-T:${title}
-M:${arrangement.timeSignature}
-Q:${arrangement.tempo}
-K:${arrangement.key}
-${trackNotation}
-`;
-    console.log(notation);
+
+    notation = [`X:1`, `M:${timeSignature}`, `Q:${tempo}`, `K:${key}`, trackNotation].join('\n');
   }
 </script>
 
-<fieldset>
+<!-- <fieldset>
   <label>
     <input type="radio" bind:group={viewMode} value="horizontal" /> Horizontal
   </label>
   <label>
     <input type="radio" bind:group={viewMode} value="vertical" /> Vertical
   </label>
-</fieldset>
+</fieldset> -->
 
 {#if timingCallbacks}
   <button on:click={() => timingCallbacks?.start()}>Start</button>

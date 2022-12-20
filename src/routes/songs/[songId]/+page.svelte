@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   // import Tracks from '$lib/track/Tracks.svelte';
-  import { trackStore } from '$lib/track/trackStore';
+  import { songStore } from '$lib/songStore';
   // import Notation from '$lib/notation/Notation.svelte';
   import SongTabs from '$lib/SongTabs/SongTabs.svelte';
 
@@ -11,7 +11,7 @@
   $: selectedArrangement = song.arrangements.find(({ id }) => id === selectedArrangementId);
   $: {
     const tracks = selectedArrangement?.tracks ?? [];
-    trackStore.init(tracks);
+    songStore.init(song.name, selectedArrangement, tracks);
   }
 </script>
 
