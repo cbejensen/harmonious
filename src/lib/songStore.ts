@@ -127,6 +127,25 @@ function createSongStore() {
         howls.forEach((howl) => howl.seek(currentTime));
         return { ...state, currentTime };
       }),
+    setPan: (trackId: number, pan: number) =>
+      update((state) => {
+        const howl = howls.get(trackId);
+        if (!howl) {
+          throw Error(`Could not find howl under track ID ${trackId}`);
+        }
+        howl.stereo(pan);
+        return {
+          ...state,
+          tracks: state.tracks.map((t) =>
+            t.id === trackId
+              ? {
+                  ...t,
+                  pan
+                }
+              : t
+          )
+        };
+      }),
     setVolume: (trackId: number, volume: number) =>
       update((state) => {
         const howl = howls.get(trackId);

@@ -25,6 +25,7 @@
         on:toggleMute={() => songStore.toggleMute(id, !muted)}
         on:toggleSolo={() => songStore.toggleSolo(id, !soloed)}
         on:volumeChange={({ detail }) => songStore.setVolume(id, detail)}
+        on:pan={({ detail }) => songStore.setPan(id, detail)}
       />
     {/each}
   </div>

@@ -16,6 +16,7 @@
     toggleMute: undefined;
     toggleSolo: undefined;
     volumeChange: number;
+    pan: number;
   }>();
 </script>
 
@@ -24,6 +25,7 @@
   <input
     aria-orientation="vertical"
     aria-label={`Volume for ${name}`}
+    class="volume"
     min={0}
     max={1}
     step={0.01}
@@ -51,6 +53,15 @@
       on:change={() => dispatch('toggleSolo')}
     />
   </label>
+  <input
+    class="w-full"
+    type="range"
+    min={-1}
+    max={1}
+    step={0.01}
+    value={pan}
+    on:input={(e) => dispatch('pan', parseFloat(e.currentTarget.value))}
+  />
 </section>
 
 <style>
@@ -69,7 +80,7 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
   }
-  input[type='range'] {
+  .volume {
     -webkit-appearance: slider-vertical;
   }
   .modifier {
