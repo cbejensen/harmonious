@@ -5,7 +5,8 @@ L:1/4
 Q:105
 K:D
 V:1 name="Melody" sname="M"
-[L:1/8]|DDE/D/|B,A,A,/B,/|DDE|F3|\nEEE|EFA|BAF/A/|A3|\nBB/c/d/c/|BAF|ADC|B,3|\nDFA|B/A/FD/F/|EDB,/D/|D3|
+
+[L:1/8]|DDE/D/|B,A,A,/B,/|DDE|F3|\nw:Be Thou my - vi sion O - Lord of my heart\nEEE|EFA|BAF/A/|A3|\nw:Naught be all else to me save that Thou ~ art\nBB/c/d/c/|BAF|ADC|B,3|\nw: Thou my - be-st tho- ught by day or by night\nDFA|B/A/FD/F/|EDB,/D/|D3||\nw: Wa- king or slee- - ping Thy- - pre- sence my- - light
 
 
 [Be Thou my - vi sion O - Lord of my heart,Naught be all else to me save that Thou ~ art

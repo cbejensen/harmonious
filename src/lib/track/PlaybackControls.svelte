@@ -16,7 +16,7 @@
 <div>
   <div class="absolute top-10 bg-gray-300 w-full h-10" />
   <button
-    class="relative grid place-content-center m-auto w-20 h-20 bg-gray-700 text-white rounded-full"
+    class="relative grid place-content-center m-auto w-20 h-20 bg-gray-700 text-white rounded-full border-4 border-white"
     on:click={$songStore.paused ? songStore.play : songStore.pause}
     type="button">{$songStore.paused ? 'Play' : 'Pause'}</button
   >

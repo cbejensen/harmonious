@@ -88,6 +88,7 @@
   }
   .volume {
     -webkit-appearance: slider-vertical;
+    width: 100%;
   }
   .modifier {
     padding: 0.5rem;
