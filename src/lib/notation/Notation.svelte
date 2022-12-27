@@ -9,15 +9,7 @@
   let viewMode: 'horizontal' | 'vertical' = 'vertical';
   let timingCallbacks: TimingCallbacks | undefined;
   $: if (mounted) {
-    const abcjsInstance = abcjs.renderAbc(
-      'notation',
-      notation,
-      viewMode === 'vertical'
-        ? {
-            responsive: 'resize'
-          }
-        : undefined
-    )[0];
+    const abcjsInstance = abcjs.renderAbc('notation', notation)[0];
 
     timingCallbacks = new abcjs.TimingCallbacks(abcjsInstance, {
       eventCallback: (ev) => {
@@ -27,8 +19,7 @@
           // in a single chord.
           highlightElements(ev.elements as unknown as HTMLElement[][]);
         }
-      },
-      extraMeasuresAtBeginning: 1
+      }
     });
 
     function highlightElements(voiceEls: HTMLElement[][]) {
@@ -99,6 +90,11 @@
     display: block !important;
     overflow-x: auto !important;
   }
+
+  :global(.notation > svg) {
+    margin: auto;
+  }
+
   :global(.notation.horizontal > svg) {
     max-width: none !important;
   }
