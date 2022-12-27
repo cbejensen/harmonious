@@ -32,20 +32,19 @@ model Arrangement {
 }
 
 model Track {
-  id                Int         @id @default(autoincrement())
-  arrangement       Arrangement @relation(fields: [arrangementId], references: [id])
-  arrangementId     Int
-  muted             Boolean     @default(false)
-  name              String      @unique
-  shortName         String?     @unique
-  pan               Float       @default(0)
-  soloed            Boolean     @default(false)
-  src               String?
-  type              String      @default("Other")
-  volume            Float       @default(1)
-  clef              String      @default("treble")
-  defaultNoteLength String      @default("1/4")
-  notation          String?
+  id            Int         @id @default(autoincrement())
+  arrangement   Arrangement @relation(fields: [arrangementId], references: [id])
+  arrangementId Int
+  muted         Boolean     @default(false)
+  name          String      @unique
+  shortName     String?     @unique
+  pan           Float       @default(0)
+  soloed        Boolean     @default(false)
+  src           String?
+  type          String      @default("Other")
+  volume        Float       @default(1)
+  clef          String      @default("treble")
+  notation      String?
 }
 
 // *** TOOD: when moving to Postgres (not supported in sqlite) ***
