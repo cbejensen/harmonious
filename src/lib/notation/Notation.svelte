@@ -1,7 +1,6 @@
 <script lang="ts">
   import abcjs, { TimingCallbacks } from 'abcjs';
   import { onMount } from 'svelte';
-  // import { songStore } from '../track/songStore';
 
   import { songStore } from '../songStore';
 
@@ -9,7 +8,10 @@
   let viewMode: 'horizontal' | 'vertical' = 'vertical';
   let timingCallbacks: TimingCallbacks | undefined;
   $: if (mounted) {
-    const abcjsInstance = abcjs.renderAbc('notation', notation)[0];
+    const abcjsInstance = abcjs.renderAbc('notation', notation, {
+      staffwidth: 1000,
+      responsive: 'resize'
+    })[0];
 
     timingCallbacks = new abcjs.TimingCallbacks(abcjsInstance, {
       eventCallback: (ev) => {
@@ -69,22 +71,20 @@
   }
 </script>
 
-<!-- <fieldset>
-  <label>
-    <input type="radio" bind:group={viewMode} value="horizontal" /> Horizontal
-  </label>
-  <label>
-    <input type="radio" bind:group={viewMode} value="vertical" /> Vertical
-  </label>
-</fieldset> -->
-
 {#if timingCallbacks}
   <button on:click={() => timingCallbacks?.start()}>Start</button>
 {/if}
 
-<div class={`notation ${viewMode}`} id="notation" />
+<div class="wrap">
+  <div class={`notation ${viewMode}`} id="notation" />
+</div>
 
 <style>
+  .wrap {
+    margin: auto;
+    max-width: 1000px;
+  }
+
   .notation.horizontal {
     /* Override obnoxious styling from abcjs, which applies them as inline styles */
     display: block !important;
