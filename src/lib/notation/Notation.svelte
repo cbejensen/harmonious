@@ -59,7 +59,7 @@
           `V:${i} name="${track.name}" sname="${track.shortName ?? track.name.slice(0, 3)}" clef="${
             track.clef
           }"`,
-          `[L:${track.defaultNoteLength}]${trackNotation}`
+          trackNotation
         ].join('\n');
       })
       .join('\n')
