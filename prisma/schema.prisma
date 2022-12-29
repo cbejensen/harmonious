@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,17 +18,17 @@ model Song {
 }
 
 model Arrangement {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String
-  song          Song    @relation(fields: [songId], references: [id])
+  song          Song     @relation(fields: [songId], references: [id])
   songId        Int
   tracks        Track[]
   author        String?
-  key           String  @default("C")
-  lyrics        String? // TODO: Make Json once switched to Postgres
-  tempo         Int     @default(120)
-  timeSignature String  @default("4/4")
-  sequence      String? // TODO: Make String[] once switched to Postgres
+  key           String   @default("C")
+  lyrics        Json?
+  tempo         Int      @default(120)
+  timeSignature String   @default("4/4")
+  sequence      String[]
 }
 
 model Track {
@@ -41,25 +41,14 @@ model Track {
   pan           Float       @default(0)
   soloed        Boolean     @default(false)
   src           String?
-  type          String      @default("Other")
+  type          TrackType?
   volume        Float       @default(1)
   clef          String      @default("treble")
   notation      String?
 }
 
-// *** TOOD: when moving to Postgres (not supported in sqlite) ***
-// enum TrackType {
-// 	MelodyMale
-// 	HarmonyMale
-// 	MelodyFemale
-// 	HarmonyFemale
-// 	MelodyMaleChild
-// 	HarmonyMaleChild
-// 	MelodyFemaleChild
-// 	HarmonyFemaleChild
-// 	Instrument
-// 	MelodyInstrument
-// 	HarmonyInstrument
-// 	Click
-// 	Other
-// }
+enum TrackType {
+  Vocal
+  Instrument
+  Click
+}
