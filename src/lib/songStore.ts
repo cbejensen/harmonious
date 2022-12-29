@@ -112,11 +112,24 @@ function createSongStore() {
         }
         return { ...state, name, arrangement, tracks };
       }),
-    play: () =>
+    play: () => {
       update((state) => {
-        howls.forEach((howl) => howl.play());
+        if (Math.floor(state.currentTime) === Math.floor(state.duration)) {
+          // We're at the end. Play from the beginning.
+          howls.forEach(({ seek, play }) => {
+            seek(0);
+            play();
+          });
+          return {
+            ...state,
+            paused: false,
+            currentTime: 0
+          };
+        }
+        howls.forEach(({ play }) => play());
         return { ...state, paused: false };
-      }),
+      });
+    },
     pause: () =>
       update((state) => {
         howls.forEach((howl) => howl.pause());
