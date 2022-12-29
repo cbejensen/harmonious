@@ -18,7 +18,7 @@ const defaultArrangement: Omit<Arrangement, 'id' | 'songId'> = {
   key: 'C',
   lyrics: '',
   name: '',
-  sequence: '',
+  sequence: [],
   tempo: 120,
   timeSignature: '4/4'
 };
@@ -165,23 +165,29 @@ function createSongStore() {
           )
         };
       }),
-    toggleMute: (trackId: number, muted?: boolean) =>
+    toggleMute: (trackId: number, shouldMute?: boolean) =>
       update((state) => {
-        const howl = howls.get(trackId);
-        if (!howl) {
-          throw Error(`Could not find howl under track ID ${trackId}`);
-        }
-        howl.mute(muted ?? !howl.mute());
         return {
           ...state,
-          tracks: state.tracks.map((track) =>
-            track.id === trackId
-              ? {
-                  ...track,
-                  muted: muted ?? !track.muted
-                }
-              : track
-          )
+          tracks: state.tracks.map((track) => {
+            if (track.id === trackId) {
+              const updatedTrack = {
+                ...track,
+                muted: shouldMute ?? !track.muted
+              };
+              const howl = howls.get(trackId);
+              if (!howl) {
+                throw Error(`Could not find howl under track ID ${trackId}`);
+              }
+              if (!track.soloed && isSomeSoloed(state.tracks)) {
+                return updatedTrack;
+              }
+              howl.mute(shouldMute ?? !howl.mute());
+              return updatedTrack;
+            } else {
+              return track;
+            }
+          })
         };
       }),
     toggleSolo: (trackId: number, soloed?: boolean) =>
