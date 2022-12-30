@@ -41,11 +41,24 @@
     mounted = true;
   });
 
+  let prevPaused: boolean | undefined;
+
+  $: if ($songStore.paused && !prevPaused) {
+    console.log('paused');
+
+    prevPaused = true;
+    timingCallbacks?.pause();
+  } else if (!$songStore.paused && prevPaused !== false) {
+    console.log('playing');
+
+    prevPaused = false;
+    timingCallbacks?.start($songStore.currentTime);
+  }
+
   let notation: string;
   $: {
     const {
       arrangement: { key, tempo, timeSignature },
-      name,
       tracks
     } = $songStore;
 
@@ -70,10 +83,6 @@
     notation = [`X:1`, `M:${timeSignature}`, `Q:${tempo}`, `K:${key}`, trackNotation].join('\n');
   }
 </script>
-
-{#if timingCallbacks}
-  <button on:click={() => timingCallbacks?.start()}>Start</button>
-{/if}
 
 <div class="wrap">
   <div class={`notation ${viewMode}`} id="notation" />
