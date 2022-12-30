@@ -116,9 +116,9 @@ function createSongStore() {
       update((state) => {
         if (Math.floor(state.currentTime) === Math.floor(state.duration)) {
           // We're at the end. Play from the beginning.
-          howls.forEach(({ seek, play }) => {
-            seek(0);
-            play();
+          howls.forEach((howl) => {
+            howl.seek(0);
+            howl.play();
           });
           return {
             ...state,
@@ -126,7 +126,7 @@ function createSongStore() {
             currentTime: 0
           };
         }
-        howls.forEach(({ play }) => play());
+        howls.forEach((howl) => howl.play());
         return { ...state, paused: false };
       });
     },
