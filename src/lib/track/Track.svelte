@@ -7,7 +7,6 @@
   export let name: string;
   export let pan: number;
   export let soloed: boolean;
-  export let type: string;
   export let volume = 0.5;
 
   import { createEventDispatcher } from 'svelte';
@@ -21,7 +20,9 @@
 </script>
 
 <section class="wrap">
-  <div role="heading" class="name">{name}</div>
+  <div class="text-ellipsis whitespace-nowrap overflow-hidden w-full text-center font-bold">
+    {name}
+  </div>
   <input
     aria-orientation="vertical"
     aria-label={`Volume for ${name}`}
@@ -77,14 +78,6 @@
     flex-direction: column;
     gap: 1rem;
     width: 6rem;
-  }
-  .name {
-    overflow: hidden;
-    overflow-wrap: anywhere;
-    text-align: center;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
   .volume {
     -webkit-appearance: slider-vertical;
