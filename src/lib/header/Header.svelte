@@ -9,7 +9,7 @@
         <a data-sveltekit-prefetch href="/">Home</a>
       </li> -->
       <li class="hover:text-orange-800" class:active={$page.url.pathname === '/songs'}>
-        <a data-sveltekit-prefetch href="/songs">Songs</a>
+        <a data-sveltekit-prefetch href="/songs">&larr; Back to Songs</a>
       </li>
     </ul>
   </nav>

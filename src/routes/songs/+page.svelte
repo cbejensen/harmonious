@@ -3,12 +3,9 @@
   export let data: PageData;
 </script>
 
-{#if data}
-  <ul>
-    {#each data.songs as song}
-      <li><a href={`/songs/${song.id}`}>{song.name}</a></li>
-    {/each}
-  </ul>
-{:else}
-  <p>loading...</p>
-{/if}
+<p class="mt-8 text-xl text-center">As songs are added, they will appear here:</p>
+<ul class="mt-4 ml-4 text-blue-800">
+  {#each data.songs as song}
+    <li><a href={`/songs/${song.id}`}>{song.name}</a></li>
+  {/each}
+</ul>
