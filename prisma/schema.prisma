@@ -6,19 +6,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model Song {
-  id                   Int           @id @default(autoincrement())
+  id                   Int           @id @default(sequence())
   arrangements         Arrangement[]
-  defaultArrangementId Int
+  defaultArrangementId Int?
   name                 String
 }
 
 model Arrangement {
-  id            Int      @id @default(autoincrement())
+  id            Int      @id @default(sequence())
   name          String
   song          Song     @relation(fields: [songId], references: [id])
   songId        Int
@@ -32,7 +32,7 @@ model Arrangement {
 }
 
 model Track {
-  id            Int         @id @default(autoincrement())
+  id            Int         @id @default(sequence())
   arrangement   Arrangement @relation(fields: [arrangementId], references: [id])
   arrangementId Int
   muted         Boolean     @default(false)
