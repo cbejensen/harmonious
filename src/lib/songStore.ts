@@ -9,6 +9,8 @@ export interface SongState {
   loaded: Record<number, boolean>;
   name: string;
   paused: boolean;
+  /** Whether the user is changing the current position of the song */
+  seeking: boolean;
   tracks: Track[];
   arrangement: Omit<Arrangement, 'id' | 'songId'>;
 }
@@ -31,6 +33,7 @@ function createSongStore() {
     loaded: {},
     name: '',
     paused: true,
+    seeking: false,
     tracks: []
   });
 
@@ -159,6 +162,21 @@ function createSongStore() {
           )
         };
       }),
+    seek: (seeking?: boolean) => {
+      update((state) => {
+        seeking = seeking === undefined ? !state.seeking : seeking;
+        if (seeking) {
+          howls.forEach((howl) => howl.stop());
+        } else {
+          // TODO
+        }
+        return {
+          ...state,
+          paused: seeking,
+          seeking
+        };
+      });
+    },
     setVolume: (trackId: number, volume: number) =>
       update((state) => {
         const howl = howls.get(trackId);
