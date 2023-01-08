@@ -42,17 +42,12 @@
   });
 
   let prevPaused: boolean | undefined;
-
   $: if ($songStore.paused && !prevPaused) {
-    console.log('paused');
-
     prevPaused = true;
     timingCallbacks?.pause();
   } else if (!$songStore.paused && prevPaused !== false) {
-    console.log('playing');
-
     prevPaused = false;
-    timingCallbacks?.start($songStore.currentTime);
+    timingCallbacks?.start($songStore.currentTime, 'seconds');
   }
 
   let notation: string;
