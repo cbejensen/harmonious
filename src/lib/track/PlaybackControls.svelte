@@ -11,6 +11,8 @@
   }
 
   import { songStore } from '../songStore';
+
+  let seekTime: number | null = null;
 </script>
 
 <div>
@@ -26,11 +28,26 @@
       class="flex-1"
       name="seek through the song by changing the playback position"
       type="range"
-      value={$songStore.currentTime}
+      value={seekTime ?? $songStore.currentTime}
       min={0}
       max={$songStore.duration}
       step={0.01}
-      on:input={(e) => songStore.setCurrentTime(parseFloat(e.currentTarget.value))}
+      on:mousedown={() => (seekTime = $songStore.currentTime)}
+      on:mouseup={(e) => {
+        seekTime = null;
+        songStore.setCurrentTime(parseFloat(e.currentTarget.value));
+      }}
+      on:keydown={(e) => {
+        console.log(e);
+        if (e.key === 'ArrowLeft') {
+          songStore.setCurrentTime(Math.max(parseFloat(e.currentTarget.value) - 5, 0));
+        } else if (e.key === 'ArrowRight') {
+          console.log(parseFloat(e.currentTarget.value));
+          songStore.setCurrentTime(
+            Math.min(parseFloat(e.currentTarget.value) + 5, $songStore.duration)
+          );
+        }
+      }}
     />
     <p aria-label="song length">{formatTime($songStore.duration)}</p>
   </div>
