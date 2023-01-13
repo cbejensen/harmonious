@@ -9,8 +9,10 @@
   let timingCallbacks: TimingCallbacks | undefined;
   $: if (mounted) {
     const abcjsInstance = abcjs.renderAbc('notation', notation, {
-      staffwidth: 1000,
-      responsive: 'resize'
+      selectTypes: false,
+      staffwidth: 800,
+      responsive: 'resize',
+      wrap: { minSpacing: 1.8, maxSpacing: 2.7, preferredMeasuresPerLine: 4 }
     })[0];
 
     timingCallbacks = new abcjs.TimingCallbacks(abcjsInstance, {
