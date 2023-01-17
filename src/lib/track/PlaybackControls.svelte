@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { prevent_default } from 'svelte/internal';
+
   function formatTime(timeInSeconds: number) {
     if (Number.isNaN(timeInSeconds)) {
       return '--:--';
@@ -45,6 +47,8 @@
         seekTime = parseFloat(e.currentTarget.value);
       }}
       on:keydown={(e) => {
+        // Don't trigger input listener
+        e.preventDefault();
         if (e.key === 'ArrowLeft') {
           songStore.setCurrentTime(Math.max(parseFloat(e.currentTarget.value) - 5, 0));
         } else if (e.key === 'ArrowRight') {
