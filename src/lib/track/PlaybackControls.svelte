@@ -23,7 +23,9 @@
     type="button">{$songStore.paused ? 'Play' : 'Pause'}</button
   >
   <div class="flex items-center gap-2 px-4 h-10 bg-gray-300">
-    <p>{formatTime($songStore.currentTime)}</p>
+    <div class="text-right w-[60px]" aria-label="current song position">
+      {formatTime(seekTime ?? $songStore.currentTime)}
+    </div>
     <input
       class="flex-1"
       name="seek through the song by changing the playback position"
@@ -32,23 +34,26 @@
       min={0}
       max={$songStore.duration}
       step={0.01}
-      on:mousedown={() => (seekTime = $songStore.currentTime)}
+      on:mousedown={() => {
+        seekTime = $songStore.currentTime;
+      }}
       on:mouseup={(e) => {
         seekTime = null;
         songStore.setCurrentTime(parseFloat(e.currentTarget.value));
       }}
+      on:input={(e) => {
+        seekTime = parseFloat(e.currentTarget.value);
+      }}
       on:keydown={(e) => {
-        console.log(e);
         if (e.key === 'ArrowLeft') {
           songStore.setCurrentTime(Math.max(parseFloat(e.currentTarget.value) - 5, 0));
         } else if (e.key === 'ArrowRight') {
-          console.log(parseFloat(e.currentTarget.value));
           songStore.setCurrentTime(
             Math.min(parseFloat(e.currentTarget.value) + 5, $songStore.duration)
           );
         }
       }}
     />
-    <p aria-label="song length">{formatTime($songStore.duration)}</p>
+    <div class="w-[60px]" aria-label="song duration">{formatTime($songStore.duration)}</div>
   </div>
 </div>
