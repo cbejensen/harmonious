@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { prevent_default } from 'svelte/internal';
-
   function formatTime(timeInSeconds: number) {
     if (Number.isNaN(timeInSeconds)) {
       return '--:--';
@@ -18,9 +16,9 @@
 </script>
 
 <div>
-  <div class="absolute top-10 bg-gray-300 w-full h-10" />
+  <div class="absolute top-8 bg-gray-300 w-full h-8" />
   <button
-    class="relative grid place-content-center m-auto w-20 h-20 bg-gray-700 text-white rounded-full border-4 border-white"
+    class="relative grid place-content-center m-auto w-16 h-16 bg-gray-700 text-white rounded-full border-4 border-white"
     on:click={$songStore.paused ? songStore.play : songStore.pause}
     type="button"
   >
@@ -30,7 +28,7 @@
       <iconify-icon class="text-4xl" icon="ic:baseline-pause" />
     {/if}
   </button>
-  <div class="flex items-center gap-2 px-4 h-10 bg-gray-300">
+  <div class="flex items-center gap-2 px-4 h-8 bg-gray-300">
     <div class="text-right w-[60px]" aria-label="current song position">
       {formatTime(seekTime ?? $songStore.currentTime)}
     </div>
