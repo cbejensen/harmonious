@@ -22,8 +22,14 @@
   <button
     class="relative grid place-content-center m-auto w-20 h-20 bg-gray-700 text-white rounded-full border-4 border-white"
     on:click={$songStore.paused ? songStore.play : songStore.pause}
-    type="button">{$songStore.paused ? 'Play' : 'Pause'}</button
+    type="button"
   >
+    {#if $songStore.paused}
+      <iconify-icon class="text-4xl" icon="ic:baseline-play-arrow" />
+    {:else}
+      <iconify-icon class="text-4xl" icon="ic:baseline-pause" />
+    {/if}
+  </button>
   <div class="flex items-center gap-2 px-4 h-10 bg-gray-300">
     <div class="text-right w-[60px]" aria-label="current song position">
       {formatTime(seekTime ?? $songStore.currentTime)}
