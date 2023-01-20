@@ -13,6 +13,8 @@ export interface SongState {
   seeking: boolean;
   tracks: Track[];
   arrangement: Omit<Arrangement, 'id' | 'songId'>;
+  /** Used to track when `currentTime` is manually updated */
+  lastCurrentTimeSet?: number;
 }
 
 const defaultArrangement: Omit<Arrangement, 'id' | 'songId'> = {
@@ -141,7 +143,7 @@ function createSongStore() {
     setCurrentTime: (currentTime: number) =>
       update((state) => {
         howls.forEach((howl) => howl.seek(currentTime));
-        return { ...state, currentTime };
+        return { ...state, currentTime, lastCurrentTimeSet: currentTime };
       }),
     setPan: (trackId: number, pan: number) =>
       update((state) => {
@@ -162,21 +164,6 @@ function createSongStore() {
           )
         };
       }),
-    seek: (seeking?: boolean) => {
-      update((state) => {
-        seeking = seeking === undefined ? !state.seeking : seeking;
-        if (seeking) {
-          howls.forEach((howl) => howl.stop());
-        } else {
-          // TODO
-        }
-        return {
-          ...state,
-          paused: seeking,
-          seeking
-        };
-      });
-    },
     setVolume: (trackId: number, volume: number) =>
       update((state) => {
         const howl = howls.get(trackId);

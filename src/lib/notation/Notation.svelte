@@ -42,6 +42,19 @@
     timingCallbacks?.start($songStore.currentTime, 'seconds');
   }
 
+  // Update highlighted notation when `currentTime` changes (e.g. user seeks through song)
+  let lastCurrentTimeSet: number | undefined;
+  $: if (
+    $songStore.lastCurrentTimeSet !== undefined &&
+    $songStore.lastCurrentTimeSet !== lastCurrentTimeSet
+  ) {
+    lastCurrentTimeSet = $songStore.lastCurrentTimeSet;
+    timingCallbacks?.[$songStore.paused ? 'setProgress' : 'start'](
+      $songStore.lastCurrentTimeSet,
+      'seconds'
+    );
+  }
+
   function highlightElements(voiceEls: HTMLElement[][]) {
     document
       .querySelectorAll('.abcjs-highlighted')
