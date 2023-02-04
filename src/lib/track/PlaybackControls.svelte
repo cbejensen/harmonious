@@ -47,6 +47,13 @@
         seekTime = null;
         songStore.setCurrentTime(parseFloat(e.currentTarget.value));
       }}
+      on:touchstart={() => {
+        seekTime = $songStore.currentTime;
+      }}
+      on:touchend={(e) => {
+        seekTime = null;
+        songStore.setCurrentTime(parseFloat(e.currentTarget.value));
+      }}
       on:input={(e) => {
         seekTime = parseFloat(e.currentTarget.value);
       }}
