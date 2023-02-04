@@ -4,7 +4,7 @@
 </script>
 
 {#if $songStore.tracks.length}
-  <div class="flex justify-center gap-2">
+  <div class="flex justify-center gap-2 overflow-scroll pb-[16px]">
     {#each $songStore.tracks as { id, muted, name, pan, soloed, volume }, i}
       <Track
         {muted}
@@ -19,7 +19,7 @@
         on:pan={({ detail }) => songStore.setPan(id, detail)}
       />
       {#if i < $songStore.tracks.length - 1}
-        <div class="border-r border-gray-300" />
+        <hr class="border-gray-300 border-r h-auto" />
       {/if}
     {/each}
   </div>
