@@ -2,10 +2,14 @@
   import type { PageData } from './$types';
 
   export let data: PageData;
-  console.log(data);
+
+  import { signOut } from '@auth/sveltekit/client';
 </script>
 
 <h1>admin</h1>
+<button data-sveltekit-preload-data="off" type="button" on:click={() => signOut('google')}>
+  Sign out
+</button>
 
 <form method="POST">
   <textarea
@@ -18,5 +22,3 @@
   />
   <button>save</button>
 </form>
-
-<pre>{JSON.stringify(data, undefined, 2)}</pre>
