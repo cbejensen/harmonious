@@ -34,11 +34,11 @@ import type { Actions } from './$types';
 export const actions = {
   default: async ({ request }) => {
     const data = await request.formData();
+    const trackId = data.get('track') as string;
     const notation = data.get('notation') as string;
-    const res = await db.track.update({
-      where: { id: 1 },
+    await db.track.update({
+      where: { id: +trackId },
       data: { notation }
     });
-    console.log(res);
   }
 } satisfies Actions;

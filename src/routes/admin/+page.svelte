@@ -3,6 +3,10 @@
 
   export let data: PageData;
 
+  const { tracks } = data.song.arrangements[0];
+  let selectedTrackId = tracks[0].id;
+  $: selectedTrack = tracks.find((track) => track.id === selectedTrackId);
+
   import { signOut } from '@auth/sveltekit/client';
 </script>
 
@@ -11,14 +15,19 @@
   Sign out
 </button>
 
-<form method="POST">
+<form method="POST" class="flex gap-2 flex-col max-w-sm">
+  <select class="block" bind:value={selectedTrackId} name="track">
+    {#each tracks as { id, name }}
+      <option value={id}>{name}</option>
+    {/each}
+  </select>
   <textarea
     class="resize"
     name="notation"
     id=""
     cols="30"
     rows="10"
-    value={data.song.arrangements[0].tracks[0].notation}
+    value={selectedTrack?.notation}
   />
   <button>save</button>
 </form>
