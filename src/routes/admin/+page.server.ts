@@ -1,6 +1,8 @@
-import { error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+
+export const prerender = false;
 
 export const load: PageServerLoad = async (event) => {
   const session = await event.locals.getSession();
