@@ -25,7 +25,7 @@ model Arrangement {
   tracks        Track[]
   author        String?
   key           String   @default("C")
-  lyrics        Json?
+  lyrics        String?
   tempo         Int      @default(120)
   timeSignature String   @default("4/4")
   sequence      String[]
